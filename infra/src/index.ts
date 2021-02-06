@@ -1,6 +1,6 @@
 const S3Create = require('./S3Create.ts');
 
-usage(){
+function usage(){
 	console.log('Sorry, that is not something I know how to do.');
 }
 
