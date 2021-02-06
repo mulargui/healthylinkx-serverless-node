@@ -5,9 +5,7 @@ const {
 	CreateBucketCommand
 } = require("@aws-sdk/client-s3");
 
-// Set the AWS region
-const REGION = "us-east-1";
-
+// Set the AWS region and secrets
 var config = new AWS.Config({
 	accessKeyId: constants.AWS_ACCESS_KEY_ID, 
 	secretAccessKey: constants.AWS_SECRET_ACCESS_KEY, 
@@ -32,13 +30,13 @@ const run = async () => {
 		const data = await s3.send(new CreateBucketCommand(bucketParams));
 		console.log("Success. Bucket created.");
 	} catch (err) {
-		console.log("Error", err);
+		console.log("Error: ", err);
 	}
 	try {
 		const results = await s3.send(new PutObjectCommand(objectParams));
 		console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
 	} catch (err) {
-		console.log("Error", err);
+		console.log("Error: ", err);
 	}
 };
 run();
