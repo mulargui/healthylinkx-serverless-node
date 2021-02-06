@@ -6,7 +6,7 @@ const {
 } = require("@aws-sdk/client-s3");
 
 // Set the AWS region and secrets
-var config {
+const config = {
 	accessKeyId: constants.AWS_ACCESS_KEY_ID, 
 	secretAccessKey: constants.AWS_SECRET_ACCESS_KEY, 
 	region: contants.AWS_REGION
