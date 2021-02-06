@@ -37,4 +37,4 @@ export default async function () {
 	} catch (err) {
 		console.log("Error: ", err);
 	}
-};
+}
