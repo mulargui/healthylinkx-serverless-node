@@ -20,7 +20,7 @@ const bucketParams = { Bucket: bucketName };
 const keyName = "hello_world.txt";
 const objectParams = { Bucket: bucketName, Key: keyName, Body: "Hello World!" };
 
-export default async function {
+export default async function () {
 	// Create an S3 client service object
 	const s3 = new S3Client(config);
 	
