@@ -109,4 +109,6 @@ dist
 #sensible data
 .aws/config
 .aws/credentials
-envparams.sh
+**/envparams.sh
+**/envparams.js
+**/envparams.ts
