@@ -39,5 +39,4 @@ async function S3Create() {
 	}
 }
 
-//exports.S3Create=S3Create;
 module.exports = S3Create;
