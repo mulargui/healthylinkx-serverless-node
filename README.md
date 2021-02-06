@@ -2,14 +2,14 @@
 Healthylinkx is a 3 tiers app: ux, api and datastore. Implementation of Healthylinkx using AWS serverless resources (S3, API Gateway, Lambda, RDS MySQL, CloudShell)
 
 Based on https://github.com/mulargui/healthylinkx-serverless  
-In this repo we are replacing the shellscripts by a node.js app (healthylinkx-cli)  
+In this repo we are replacing the shellscripts by a Node.js app (healthylinkx-cli). Also using TypeScript instead of vanilla JavaScript.  
 
 Related repos (look at the documentation in each of them)  
 UX https://github.com/mulargui/healthylinkx-ux  
 API https://github.com/mulargui/healthylinkx-api-in-node  
 Datastore https://github.com/mulargui/healthylinkx-mysql
 
-This app installs in your default VPC. I need to add a little bit more work to the installation scripts 
+This app installs in your default VPC. I need to add a little bit more code to healthylinkx-cli 
 to create a dedicated VPC.
 
 Directories and files  
