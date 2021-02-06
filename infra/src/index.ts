@@ -9,7 +9,7 @@ const {
 const config = {
 	accessKeyId: constants.AWS_ACCESS_KEY_ID, 
 	secretAccessKey: constants.AWS_SECRET_ACCESS_KEY, 
-	region: contants.AWS_REGION
+	region: constants.AWS_REGION
 };
 
 
