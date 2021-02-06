@@ -1,4 +1,3 @@
 
-(cd infra/src; pwd; npm install)
-pwd
+(cd infra/src; npm install)
 node infra/src/index.ts

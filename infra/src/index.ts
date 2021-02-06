@@ -6,11 +6,11 @@ const {
 } = require("@aws-sdk/client-s3");
 
 // Set the AWS region and secrets
-var config = new AWS.Config({
+var config {
 	accessKeyId: constants.AWS_ACCESS_KEY_ID, 
 	secretAccessKey: constants.AWS_SECRET_ACCESS_KEY, 
 	region: contants.AWS_REGION
-});
+};
 
 
 // Set the bucket parameters
@@ -22,7 +22,7 @@ const keyName = "hello_world.txt";
 const objectParams = { Bucket: bucketName, Key: keyName, Body: "Hello World!" };
 
 // Create an S3 client service object
-const s3 = new S3Client();
+const s3 = new S3Client(config);
 
 const run = async () => {
 	// Create S3 bucket
