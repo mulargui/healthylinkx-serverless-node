@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Cordova headers -->
+    <!--meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *"-->
+	<!--meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+	<style type="text/css"> body{text-transform:none;} </style-->
+	<!-- ends here -->
+	
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HealthyLinkx</title>
+
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+	<!--link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"-->
+</head>
+
+<body>
+
+<div class="container" id="Logo">
+	<a href="index.html">
+		<h1><i class="fa fa-user-md"></i>
+		<strong>Healthy</strong>Linkx</h1>
+	</a>
+	<p class="lead">Mapping the healthcare world!</p>
+</div>
+
+<div class="container" id="ProvidersSearch">
+	<legend>Providers Search</legend>
+	<div class="row">
+		<input type="text" class="form-control" id="specialty" placeholder="Type a Medical Specialty">
+	</div>
+	<div class="row">
+		<p></p>
+	</div>
+	<div class="row">
+		<input type="text" class="form-control" id="lastname" placeholder="Last Name" maxlength="30" pattern="\w+"> 
+	</div>
+	<div class="row">
+		<p></p>
+	</div>
+	<div class="row">
+		<select class="form-control" id="gender">
+			<option>No gender preference</option>
+			<option>Female only</option>
+			<option>Male only</option>
+		</select>
+	</div>			
+	<div class="row">
+		<p></p>
+	</div>
+	<div class="row">
+		<input type="text" class="form-control" id="zipCode" placeholder="Zip Code" autocomplete="off" maxlength="5" pattern="\d{5}"> 
+	</div>
+	<div class="row">
+		<p></p>
+	</div>
+	<div class="row">
+		<select class="form-control" id="distance">
+			<option value="5">Within 5 miles</option>
+			<option value="10">Within 10 miles</option>
+			<option value="25">Within 25 miles</option>
+		</select>
+	</div>
+	<div class="row">
+		<p></p>
+	</div>
+	<div class="row">
+		<button class="btn btn-link" onclick="searchProviders()">
+			<i class="glyphicon glyphicon-search"></i>&nbsp;Search</button>
+	</div>
+</div>
+
+<div class="container" id="ProvidersList" style="display: none;">
+	<legend>List of Matching Providers</legend>
+	<table class="table table-bordered table-striped" id="resultsTable">
+		<thead><tr>
+			<th>&nbsp;</th>	
+			<th>Name</th>
+			<th>Street</th>
+			<th>City</th>
+		</tr></thead>
+		<tbody></tbody>	
+	</table>
+	<button class="btn btn-link" onclick="shortProviderList()">
+		<i class="glyphicon glyphicon-list-alt"></i>&nbsp;Select Providers</button>
+	<button class="btn btn-link" onclick="newSearch()">
+		<i class="glyphicon glyphicon-search"></i>&nbsp;New Search</button>
+</div>
+
+<div class="container" id="ProvidersShortList" style="display: none;">
+	<legend>Short list of Matching Providers</legend>
+	<table class="table table-bordered table-striped" id="shortresultsTable">
+		<thead><tr>
+			<th>NPI</th>
+			<th>Name</th>
+			<th>Street</th>
+			<th>City</th>
+			<th>Telephone</th>
+		</tr></thead>
+		<tbody></tbody>	
+	</table>
+	<button class="btn btn-link" onclick="newSearch()">
+		<i class="glyphicon glyphicon-search"></i>&nbsp;New Search</button>
+</div>
+
+<div class="container" id="MessageArea" style="display: none;">
+	<p></p>
+	<div class="alert alert-danger">
+		<span id="messageText">Place holder for message</span>
+	</div>
+</div>
+
+<footer class="footer">
+	<p></p>
+	<div class="container">
+		<p>HealthyLinkx &copy; 2014</p>
+	</div>
+</footer>
+
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<!--script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script-->
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<!--script type="text/javascript" src="cordova.js"></script-->
+<script type="text/javascript" src="js/constants.js"></script>
+<script type="text/javascript" src="js/clientcode.js"></script>
+<!--script type="text/javascript" src="js/index.js"></script-->
+
+</body>
+</html>

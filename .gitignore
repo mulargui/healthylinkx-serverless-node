@@ -102,3 +102,11 @@ dist
 
 # TernJS port file
 .tern-port
+
+# sql dump files
+**/healthylinkxdump.sql
+
+#sensible data
+.aws/config
+.aws/credentials
+envparams.sh
