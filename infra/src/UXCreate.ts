@@ -66,12 +66,12 @@ async function UXCreate() {
 			IndexDocument: {Suffix: "index.html"}
 		}
 	};
-	try {
+/*	try {
 		const data = await AWSs3Client.send(new PutBucketWebsiteCommand(staticHostParams));
 		console.log("Success. " + bucketName + " setup as a static web.");
 	} catch (err) {
 		console.log("Error: ", err);
-	}
+	}*/
 }
 
 /*
