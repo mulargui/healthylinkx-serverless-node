@@ -46,19 +46,61 @@ async function UXCreate() {
 		console.log("Error: ", err);
 	}
 
+	//copy files
     walkSync(directoryToUpload, function(filePath, stat) {
         let bucketPath = filePath.substring(directoryToUpload.length+1);
         let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath)};
  
-		AWSs3Client.putObject(params, function(err, data) {
-			if (err) {
-				console.log(err)
-			} else {
-				console.log('Successfully uploaded '+ bucketPath +' to ' + bucketName);
-			}
-		});
+		try {
+			const data = await AWSs3Client.send(new PutObjectCommand(uploadParams));
+			console.log("Success. Bucket created.");
+		} catch (err) {
+			console.log("Error: ", err);
+		}
 	});
+	
+	//Setting the bucket as a static web host
+	try {
+		const data = await AWSs3Client.send(new GetBucketWebsiteCommand({ Bucket: bucketName}));
+		console.log("Success. Bucket created.");
+	} catch (err) {
+		console.log("Error: ", err);
+	}
+
 }
+
+/*
+
+// Set the parameters.
+const uploadParams = {
+  Bucket: "BUCKET_NAME",
+  // Specify the name of the new object. For example, 'index.html'.
+  // To create a directory for the object, use '/'. For example, 'myApp/package.json'.
+  Key: "OBJECT_NAME",
+  // Content of the new object.
+  Body: "BODY"
+};
+
+  try {
+    const data = await s3.send(new PutObjectCommand(uploadParams));
+    console.log(
+        "Successfully uploaded object: " + uploadParams.Bucket + "/" + uploadParams.Key
+    );
+  } catch (err) {
+    console.log("Error", err);
+  }
+	  
+	  
+	  
+	  
+  try {
+    const data = await s3.send(new GetBucketWebsiteCommand({ Bucket: "BUCKET_NAME" }));
+    console.log("Success", data);
+  } catch (err) {
+    console.log("Error", err);
+  }
+
+*/
 
 /*
 #include the API URL in the javascript code
