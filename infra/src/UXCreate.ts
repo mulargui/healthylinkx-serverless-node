@@ -62,11 +62,10 @@ async function UXCreate() {
 	const staticHostParams = {
 		Bucket: bucketName,
 		WebsiteConfiguration: {
-			//ErrorDocument: {Key: ""},
 			IndexDocument: {Suffix: "index.html"}
 		}
 	};
-		console.log("Success. " + bucketName + " setup as a static web.");
+
 	try {
 		const data = await AWSs3Client.send(new PutBucketWebsiteCommand(staticHostParams));
 		console.log("Success. " + bucketName + " setup as a static web.");
