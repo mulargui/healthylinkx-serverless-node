@@ -21,7 +21,7 @@ const bucketParams = { Bucket: bucketName };
 const directoryToUpload = '/home/cloudshell-user/healthylinkx-serverless-node/ux/src';
 
 // ======= helper functions ==========
-async function walkSync(currentDirPath, callback) {
+function walkSync(currentDirPath, callback) {
 	fs.readdirSync(currentDirPath).forEach(function (name) {
 		var filePath = path.join(currentDirPath, name);
 		var stat = fs.statSync(filePath);
@@ -47,7 +47,7 @@ async function UXCreate() {
 	}
 
 	//copy files
-    walkSync(directoryToUpload, function(filePath, stat) {
+    walkSync(directoryToUpload, async function(filePath, stat) {
         let bucketPath = filePath.substring(directoryToUpload.length+1);
         let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath)};
  
