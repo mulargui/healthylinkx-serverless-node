@@ -62,7 +62,7 @@ async function UXCreate() {
 	const staticHostParams = {
 		Bucket: {Bucket: bucketName},
 		WebsiteConfiguration: {
-			//ErrorDocument: {Key: ""},
+			ErrorDocument: {Key: ""},
 			IndexDocument: {Suffix: "index.html"}
 		}
 	};
