@@ -3,7 +3,7 @@ const {
 	S3Client,
 	PutObjectCommand,
 	CreateBucketCommand,
-	GetBucketWebsiteCommand
+	PutBucketWebsiteCommand
 } = require("@aws-sdk/client-s3");
 const fs = require('fs');
 const path = require('path');
@@ -59,16 +59,30 @@ async function UXCreate() {
 	});
 	
 	//Setting the bucket as a static web host
+	const staticHostParams = {
+		Bucket: {Bucket: bucketName},
+		WebsiteConfiguration: {
+			//ErrorDocument: {Key: ""},
+			IndexDocument: {Suffix: "index.html"}
+		}
+	};
 	try {
-		const data = await AWSs3Client.send(new GetBucketWebsiteCommand({ Bucket: bucketName}));
+		const data = await AWSs3Client.send(new PutBucketWebsiteCommand(staticHostParams));
 		console.log("Success. " + bucketName + " setup as a static web.");
 	} catch (err) {
 		console.log("Error: ", err);
 	}
-
 }
 
 /*
+
+  try {
+    const data = await s3.send(new DeleteBucketWebsiteCommand(bucketParams));
+    console.log("Success", data);
+  } catch (err) {
+    console.log("Error", err);
+  }
+  
 #include the API URL in the javascript code
 APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
 sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/constants.js
