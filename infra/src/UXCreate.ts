@@ -2,7 +2,8 @@ const constants = require('./envparams.ts');
 const {
 	S3Client,
 	PutObjectCommand,
-	CreateBucketCommand
+	CreateBucketCommand,
+	GetBucketWebsiteCommand
 } = require("@aws-sdk/client-s3");
 const fs = require('fs');
 const path = require('path');
@@ -16,8 +17,6 @@ const config = {
 
 // Set the bucket parameters
 const bucketName = "healthylinkx";
-const bucketParams = { Bucket: bucketName };
-
 const directoryToUpload = '/home/cloudshell-user/healthylinkx-serverless-node/ux/src';
 
 // ======= helper functions ==========
@@ -40,8 +39,8 @@ async function UXCreate() {
 	
 	// Create S3 bucket
 	try {
-		const data = await AWSs3Client.send(new CreateBucketCommand(bucketParams));
-		console.log("Success. Bucket created.");
+		const data = await AWSs3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+		console.log("Success. " + bucketName + " bucket created.");
 	} catch (err) {
 		console.log("Error: ", err);
 	}
@@ -53,7 +52,7 @@ async function UXCreate() {
  
 		try {
 			const data = await AWSs3Client.send(new PutObjectCommand(params));
-			console.log("Success. Bucket created.");
+			console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
 		} catch (err) {
 			console.log("Error: ", err);
 		}
@@ -62,45 +61,12 @@ async function UXCreate() {
 	//Setting the bucket as a static web host
 	try {
 		const data = await AWSs3Client.send(new GetBucketWebsiteCommand({ Bucket: bucketName}));
-		console.log("Success. Bucket created.");
+		console.log("Success. " + bucketName + " setup as a static web.");
 	} catch (err) {
 		console.log("Error: ", err);
 	}
 
 }
-
-/*
-
-// Set the parameters.
-const uploadParams = {
-  Bucket: "BUCKET_NAME",
-  // Specify the name of the new object. For example, 'index.html'.
-  // To create a directory for the object, use '/'. For example, 'myApp/package.json'.
-  Key: "OBJECT_NAME",
-  // Content of the new object.
-  Body: "BODY"
-};
-
-  try {
-    const data = await s3.send(new PutObjectCommand(uploadParams));
-    console.log(
-        "Successfully uploaded object: " + uploadParams.Bucket + "/" + uploadParams.Key
-    );
-  } catch (err) {
-    console.log("Error", err);
-  }
-	  
-	  
-	  
-	  
-  try {
-    const data = await s3.send(new GetBucketWebsiteCommand({ Bucket: "BUCKET_NAME" }));
-    console.log("Success", data);
-  } catch (err) {
-    console.log("Error", err);
-  }
-
-*/
 
 /*
 #include the API URL in the javascript code
