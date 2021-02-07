@@ -1,7 +1,7 @@
 const S3Create = require('./S3Create.ts');
 
 function usage(){
-	console.log('Sorry, that is not something I know how to do.');
+	console.log('Usage: healthylinkx-cli ds|api|ux|all delete|d|create|c|update|u');
 }
 
 
@@ -16,9 +16,11 @@ case 'ds':
 		console.log('10');
 		break;
 	case 'delete':
+	case 'd':
 		console.log('11');
 	    break;
 	case 'update':
+	case 'u':
 		console.log('12');
 	    break;
 	default:
@@ -28,12 +30,15 @@ case 'ds':
 case 'api':
 	switch (myArgs[1]) {
 	case 'create':
+	case 'c':
 		console.log('20');
 		break;
 	case 'delete':
+	case 'd':
 		console.log('21');
 	    break;
 	case 'update':
+	case 'u':
 		console.log('22');
 	    break;
 	default:
@@ -43,12 +48,16 @@ case 'api':
 case 'ux':
 	switch (myArgs[1]) {
 	case 'create':
+	case 'c':
+		//S3Create();
 		console.log('30');
 		break;
 	case 'delete':
+	case 'd':
 		console.log('31');
 	    break;
 	case 'update':
+	case 'u':
 		console.log('32');
 	    break;
 	default:
@@ -58,12 +67,15 @@ case 'ux':
 case 'all':
 	switch (myArgs[1]) {
 	case 'create':
+	case 'c':
 		console.log('40');
 		break;
 	case 'delete':
+	case 'd':
 		console.log('41');
 	    break;
 	case 'update':
+	case 'u':
 		console.log('42');
 	    break;
 	default:
@@ -74,13 +86,3 @@ default:
     return usage();
 }
 
-
-
-
-
-
-
-
-console.log(process.argv);
-
-//S3Create();
