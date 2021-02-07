@@ -17,7 +17,7 @@ const config = {
 const bucketName = "healthylinkx";
 const bucketParams = { Bucket: bucketName };
 
-function UXCreate() {
+async function UXCreate() {
 	// Create an S3 client service object
 	const AWSs3Client = new S3Client(config);
 	
