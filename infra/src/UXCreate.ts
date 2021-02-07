@@ -52,7 +52,7 @@ async function UXCreate() {
         let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath)};
  
 		try {
-			const data = await AWSs3Client.send(new PutObjectCommand(uploadParams));
+			const data = await AWSs3Client.send(new PutObjectCommand(params));
 			console.log("Success. Bucket created.");
 		} catch (err) {
 			console.log("Error: ", err);
