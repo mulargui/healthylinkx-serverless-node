@@ -1,4 +1,5 @@
 const UXCreate = require('./UXCreate.ts');
+const UXDelete = require('./UXDelete.ts');
 
 function usage(){
 	console.log('Usage: healthylinkx-cli ds|api|ux|all delete|d|create|c|update|u');
@@ -52,7 +53,7 @@ case 'ux':
 		break;
 	case 'delete':
 	case 'd':
-		console.log('31');
+		Delete();
 	    break;
 	case 'update':
 	case 'u':

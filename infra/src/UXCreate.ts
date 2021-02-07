@@ -74,72 +74,13 @@ async function UXCreate() {
 	}
 }
 
-/*
-
-var readOnlyAnonUserPolicy = {
-  Version: "2012-10-17",
-  Statement: [
-    {
-      Sid: "AddPerm",
-      Effect: "Allow",
-      Principal: "*",
-      Action: [
-        "s3:GetObject"
-      ],
-      Resource: [
-        ""
-      ]
-    }
-  ]
-};
-
-// create selected bucket resource string for bucket policy
-var bucketResource = "arn:aws:s3:::" + process.argv[2] + "/*";
-readOnlyAnonUserPolicy.Statement[0].Resource[0] = bucketResource;
-
-// convert policy JSON into string and assign into params
-var bucketPolicyParams = {Bucket: process.argv[2], Policy: JSON.stringify(readOnlyAnonUserPolicy)};
-
-// set the new policy on the selected bucket
-s3.putBucketPolicy(bucketPolicyParams, function(err, data) {
-  if (err) {
-    // display error message
-    console.log("Error", err);
-  } else {
-    console.log("Success", data);
-  }
-});
-
-
-var bucketParams = {Bucket: process.argv[2]};
-
-// call S3 to delete website configuration for selected bucket
-s3.deleteBucketWebsite(bucketParams, function(error, data) {
-  if (error) {
-    console.log("Error", err);
-  } else if (data) {
-    console.log("Success", data);
-  }
-});
-
-
-  try {
-    const data = await s3.send(new DeleteBucketWebsiteCommand(bucketParams));
-    console.log("Success", data);
-  } catch (err) {
-    console.log("Error", err);
-  }
-  
+/*  
 #include the API URL in the javascript code
 APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
 sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/constants.js
 
-#installing UX using S3
-aws s3 sync $ROOT/ux/src s3://healthylinkx --acl public-read
-
 #this is the URL of the bucket
 echo http://healthylinkx.s3-website-$AWS_REGION.amazonaws.com/
-
 */
 
 module.exports = UXCreate;
