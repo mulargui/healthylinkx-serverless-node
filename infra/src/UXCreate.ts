@@ -46,16 +46,23 @@ async function UXCreate() {
 	}
 
 	//copy files
-    walkSync(directoryToUpload, async function(filePath, stat) {
+    walkSync(directoryToUpload, function(filePath, stat) {
         let bucketPath = filePath.substring(directoryToUpload.length+1);
         let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath)};
  
-		try {
-			const data = await AWSs3Client.send(new PutObjectCommand(params));
+		AWSs3Client.send(new PutObjectCommand(params),function(err, data) {
+			if (err) {
+				console.log("Error: ", err);
+			} else {
+				console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
+			}
+		})
+/*
+			);
 			console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
 		} catch (err) {
 			console.log("Error: ", err);
-		}
+		}*/
 	});
 	
 	//Setting the bucket as a static web host
