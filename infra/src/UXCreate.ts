@@ -4,7 +4,7 @@ const {
 	PutObjectCommand,
 	CreateBucketCommand
 } = require("@aws-sdk/client-s3");
-const { promises as fs, createReadStream } = require('fs');
+const fs = require('fs');
 const path = require('path');
 
 // Set the AWS region and secrets
@@ -37,7 +37,7 @@ async function uploadDir(s3Path: string, bucketName: string) {
       .putObject({
         Key: path.relative(s3Path, filePath),
         Bucket: bucketName,
-        Body: createReadStream(filePath),
+        Body: fs.createReadStream(filePath),
       })
       .promise()
   );
