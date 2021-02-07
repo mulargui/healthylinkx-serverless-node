@@ -46,19 +46,12 @@ async function UXCreate() {
 	}
 
 	//copy files
-    walkSync(directoryToUpload, function(filePath, stat) {
+    walkSync(directoryToUpload, async function(filePath, stat) {
         let bucketPath = filePath.substring(directoryToUpload.length+1);
         let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath)};
  
-		AWSs3Client.send(new PutObjectCommand(params),function(err, data) {
-			if (err) {
-				console.log("Error: ", err);
-			} else {
-				console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
-			}
-		})
-/*
-			);
+		try {
+			const data = await AWSs3Client.send(new PutObjectCommand(params));
 			console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
 		} catch (err) {
 			console.log("Error: ", err);
@@ -67,19 +60,19 @@ async function UXCreate() {
 	
 	//Setting the bucket as a static web host
 	const staticHostParams = {
-		Bucket: {Bucket: bucketName},
+		Bucket: bucketName,
 		WebsiteConfiguration: {
-			ErrorDocument: {Key: ""},
+			ErrorDocument: {Key: "index.html"},
 			IndexDocument: {Suffix: "index.html"}
 		}
 	};
 		console.log("Success. " + bucketName + " setup as a static web.");
-/*	try {
+	try {
 		const data = await AWSs3Client.send(new PutBucketWebsiteCommand(staticHostParams));
 		console.log("Success. " + bucketName + " setup as a static web.");
 	} catch (err) {
 		console.log("Error: ", err);
-	}*/
+	}
 }
 
 /*
