@@ -1,9 +1,8 @@
-const S3Create = require('./S3Create.ts');
+const UXCreate = require('./UXCreate.ts');
 
 function usage(){
 	console.log('Usage: healthylinkx-cli ds|api|ux|all delete|d|create|c|update|u');
 }
-
 
 //command line arguments analysis
 var myArgs = process.argv.slice(2);
@@ -49,8 +48,7 @@ case 'ux':
 	switch (myArgs[1]) {
 	case 'create':
 	case 'c':
-		//S3Create();
-		console.log('30');
+		UXCreate();
 		break;
 	case 'delete':
 	case 'd':
