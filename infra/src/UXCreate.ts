@@ -25,7 +25,7 @@ function walkSync(currentDirPath, callback) {
 		var filePath = path.join(currentDirPath, name);
 		var stat = fs.statSync(filePath);
 		if (stat.isFile()) {
-			callback(filePath, stat);
+			await callback(filePath, stat);
 		} else if (stat.isDirectory()) {
 			walkSync(filePath, callback);
 		}
