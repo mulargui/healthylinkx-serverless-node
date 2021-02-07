@@ -55,7 +55,7 @@ async function UXCreate() {
 			console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
 		} catch (err) {
 			console.log("Error: ", err);
-		}*/
+		}
 	});
 	
 	//Setting the bucket as a static web host
