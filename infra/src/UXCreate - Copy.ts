@@ -4,8 +4,7 @@ const {
 	PutObjectCommand,
 	CreateBucketCommand
 } = require("@aws-sdk/client-s3");
-const { promises as fs, createReadStream } = require('fs');
-const path = require('path');
+const s3 = require('s3');
 
 // Set the AWS region and secrets
 const config = {
@@ -13,36 +12,6 @@ const config = {
 	secretAccessKey: constants.AWS_SECRET_ACCESS_KEY, 
 	region: constants.AWS_REGION
 };
-
-
-async function uploadDir(s3Path: string, bucketName: string) {
-  const s3 = new S3();
-
-  // Recursive getFiles from
-  // https://stackoverflow.com/a/45130990/831465
-  async function getFiles(dir: string): Promise<string | string[]> {
-    const dirents = await fs.readdir(dir, { withFileTypes: true });
-    const files = await Promise.all(
-      dirents.map((dirent) => {
-        const res = path.resolve(dir, dirent.name);
-        return dirent.isDirectory() ? getFiles(res) : res;
-      })
-    );
-    return Array.prototype.concat(...files);
-  }
-
-  const files = (await getFiles(s3Path)) as string[];
-  const uploads = files.map((filePath) =>
-    s3
-      .putObject({
-        Key: path.relative(s3Path, filePath),
-        Bucket: bucketName,
-        Body: createReadStream(filePath),
-      })
-      .promise()
-  );
-  return Promise.all(uploads);
-}
 
 // Set the bucket parameters
 const bucketName = "healthylinkx";
@@ -60,12 +29,24 @@ async function UXCreate() {
 		console.log("Error: ", err);
 	}
 	
-	try {
-		await uploadDir(path.resolve("/home/cloudshell-user/healthylinkx-serverless-node/ux/src"), bucketName);
-		console.log("Success. Bucket created.");
-	} catch (err) {
-		console.log("Error: ", err);
-	}
+	// using the S3 package to sync a folder
+	var client = s3.createClient({s3Client: AWSs3Client});
+	var params = {
+		localDir: "/home/cloudshell-user/healthylinkx-serverless-node/ux/src",
+		deleteRemoved: true, 
+		s3Params: {
+			Bucket: bucketName,
+			Prefix: "/"
+			// See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
+		}
+	};
+	var uploader = client.uploadDir(params);
+	uploader.on('error', function(err) {
+		console.error("unable to sync:", err.stack);
+	});
+	uploader.on('end', function() {
+		console.log("done uploading");
+	});
 }
 
 /*
