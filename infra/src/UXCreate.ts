@@ -6,7 +6,6 @@ const {
 } = require("@aws-sdk/client-s3");
 const fs = require('fs');
 const path = require('path');
-//const readdir = require("recursive-readdir");
 
 // Set the AWS region and secrets
 const config = {
@@ -21,41 +20,20 @@ const bucketParams = { Bucket: bucketName };
 
 const directoryToUpload = '/home/cloudshell-user/healthylinkx-serverless-node/ux/src';
 
-// ===== helper functions =======
-// get file paths
-const filePaths = [];
-const getFilePaths = (dir) => {
-  fs.readdirSync(dir).forEach(function (name) {
-    const filePath = path.join(dir, name);
-    const stat = fs.statSync(filePath);
-    if (stat.isFile()) {
-      filePaths.push(filePath);
-    } else if (stat.isDirectory()) {
-      getFilePaths(filePath);
-    }
-  });
-};
+// ======= helper functions ==========
+function walkSync(currentDirPath, callback) {
+	fs.readdirSync(currentDirPath).forEach(function (name) {
+		var filePath = path.join(currentDirPath, name);
+		var stat = fs.statSync(filePath);
+		if (stat.isFile()) {
+			callback(filePath, stat);
+		} else if (stat.isDirectory()) {
+			walkSync(filePath, callback);
+		}
+	});
+}
 
-// upload to S3
-const uploadToS3 = (s3, dir, path) => {
-  return new Promise((resolve, reject) => {
-    const key = path.split(`${dir}/`)[1];
-    const params = {
-      Bucket: bucketName,
-      Key: key,
-      Body: fs.readFileSync(path),
-    };
-    s3.putObject(params, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        console.log(`uploaded ${params.Key} to ${params.Bucket}`);
-        resolve(path);
-      }
-    });
-  });
-};
-
+// ====== create the S3 bucket and copy files =====
 async function UXCreate() {
 	// Create an S3 client service object
 	const AWSs3Client = new S3Client(config);
@@ -68,19 +46,18 @@ async function UXCreate() {
 		console.log("Error: ", err);
 	}
 
-	getFilePaths(directoryToUpload);
-
-const uploadPromises = filePaths.map((path) =>
-  uploadToS3(AWSs3Client, directoryToUpload, path)
-);
-
-Promise.all(uploadPromises)
-  .then((result) => {
-    console.log('uploads complete');
-    console.log(result);
-  })
-  .catch((err) => console.error(err));
-
+    walkSync(directoryToUpload, function(filePath, stat) {
+        let bucketPath = filePath.substring(directoryToUpload.length+1);
+        let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath)};
+ 
+		AWSs3Client.putObject(params, function(err, data) {
+			if (err) {
+				console.log(err)
+			} else {
+				console.log('Successfully uploaded '+ bucketPath +' to ' + bucketName);
+			}
+		});
+	});
 }
 
 /*
