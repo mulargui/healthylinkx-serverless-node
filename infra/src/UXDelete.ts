@@ -26,7 +26,7 @@ async function UXDelete() {
 		const { Contents } = await AWSs3Client.send(new ListObjectsCommand({ Bucket: bucketName }));
 		if (Contents.length > 0) {
 			const data = await AWSs3Client.send(new DeleteObjectsCommand({ Bucket: bucketName },
-				{ Delete: { Objects: Contents }}
+				{ Delete: { Objects: Contents.map((key) => ({ Key: key }))}}
 				//{ Delete: { Objects: Contents.map(({ Key }) => ({ Key }))}}
 			)); 
 		}
