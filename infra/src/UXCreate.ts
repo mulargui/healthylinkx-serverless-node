@@ -17,7 +17,7 @@ const config = {
 
 // Set the bucket parameters
 const bucketName = "healthylinkx";
-const directoryToUpload = ROOT + '/ux/src';
+const directoryToUpload = constants.ROOT + '/ux/src';
 
 // ======= helper functions ==========
 // Recursively travels a folder tree
@@ -79,7 +79,7 @@ sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/co
 		console.log("Error: ", err);
 	}
 	
-	console.log("URL of the bucket: http://" + bucketName + ".s3-website-" + AWS_REGION + ".amazonaws.com/");
+	console.log("URL of the bucket: http://" + bucketName + ".s3-website-" + constants.AWS_REGION + ".amazonaws.com/");
 }
 
 module.exports = UXCreate;

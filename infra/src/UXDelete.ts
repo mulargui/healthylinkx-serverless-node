@@ -1,7 +1,9 @@
 const constants = require('./envparams.ts');
 const {
 	S3Client,
-	DeleteBucketWebsiteCommand
+	ListObjectsCommand,
+	DeleteObjectsCommand,
+	DeleteBucketCommand
 } = require("@aws-sdk/client-s3");
 
 // Set the AWS region and secrets
