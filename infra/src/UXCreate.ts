@@ -17,9 +17,10 @@ const config = {
 
 // Set the bucket parameters
 const bucketName = "healthylinkx";
-const directoryToUpload = '/home/cloudshell-user/healthylinkx-serverless-node/ux/src';
+const directoryToUpload = ROOT + '/ux/src';
 
 // ======= helper functions ==========
+// Recursively travels a folder tree
 function walkSync(currentDirPath, callback) {
 	fs.readdirSync(currentDirPath).forEach(function (name) {
 		var filePath = path.join(currentDirPath, name);
@@ -34,6 +35,11 @@ function walkSync(currentDirPath, callback) {
 
 // ====== create the S3 bucket and copy files =====
 async function UXCreate() {
+/*  
+#include the API URL in the javascript code
+APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
+sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/constants.js
+*/
 	// Create an S3 client service object
 	const AWSs3Client = new S3Client(config);
 	
@@ -72,15 +78,8 @@ async function UXCreate() {
 	} catch (err) {
 		console.log("Error: ", err);
 	}
+	
+	console.log("URL of the bucket: http://" + bucketName + ".s3-website-" + AWS_REGION + ".amazonaws.com/");
 }
-
-/*  
-#include the API URL in the javascript code
-APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
-sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/constants.js
-
-#this is the URL of the bucket
-echo http://healthylinkx.s3-website-$AWS_REGION.amazonaws.com/
-*/
 
 module.exports = UXCreate;

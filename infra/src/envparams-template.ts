@@ -3,13 +3,13 @@
 const AWS_ACCESS_KEY_ID='1234567890'
 const AWS_SECRET_ACCESS_KEY='ABCDEFGHIJKLMN'
 const AWS_DEFAULT_REGION='us-east-1'
-const AWS_DEFAULT_OUTPUT='text'
+const AWS_DEFAULT_OUTPUT='json'
 
 const AWS_ACCOUNT_ID='1234567890'
 const AWS_REGION=AWS_DEFAULT_REGION
 
 //repo location
-const ROOT='pwd'
+const ROOT='/home/cloudshell-user/healthylinkx-serverless-node'
 
 //datastore user
 const DBUSER='user'

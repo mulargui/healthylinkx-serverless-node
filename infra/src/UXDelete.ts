@@ -18,24 +18,24 @@ const bucketName = "healthylinkx";
 async function UXDelete() {
 	// Create an S3 client service object
 	const AWSs3Client = new S3Client(config);
-
+  
 	// remove all files
-	const { Contents } = await AWSs3Client.listObjects({ Bucket: bucketName }).promise();
-	if (Contents.length > 0) {
-		await AWSs3Client
-        .deleteObjects({
-          Bucket,
-          Delete: {
-            Objects: Contents.map(({ Key }) => ({ Key }))
-          }
-        })
-        .promise();
-    }
+	try {
+		const { Contents } = await AWSs3Client.send(new ListObjectsCommand({ Bucket: bucketName }));
+		if (Contents.length > 0) {
+			const data = await AWSs3Client.send(new DeleteObjectsCommand({ Bucket: bucketName },
+				Delete: { Objects: Contents.map(({ Key }) => ({ Key }))}
+			)); 
+		}
+ 		console.log("Success: " + bucketName + " emptied.");
+	}catch (err) {
+		console.log("Error: ", err);
+	}
 	
 	// Delete S3 bucket
 	try {
-		const data = await AWSs3Client.send(new DeleteBucketWebsiteCommand({ Bucket: bucketName }));
-		console.log("Success. " + bucketName + " bucket deleted.");
+		const data = await AWSs3Client.send(new DeleteBucketCommand({ Bucket: bucketName }));
+		console.log("Success: " + bucketName + " bucket deleted.");
 	} catch (err) {
 		console.log("Error: ", err);
 	}
