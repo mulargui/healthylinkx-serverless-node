@@ -53,7 +53,7 @@ case 'ux':
 		break;
 	case 'delete':
 	case 'd':
-		Delete();
+		UXDelete();
 	    break;
 	case 'update':
 	case 'u':
