@@ -23,11 +23,14 @@ async function UXDelete() {
   
 	// remove all files
 	try {
-		const { Contents } = await AWSs3Client.send(new ListObjectsCommand({ Bucket: bucketName }));
+		const Contents = await AWSs3Client.send(new ListObjectsCommand({ Bucket: bucketName }));
 		if (Contents.length > 0) {
-			Contents.forEach(async function(value){
+			for (let value of Contents) {
 				await AWSs3Client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: value.Key})); 
 			});
+			/*Contents.forEach(function(value){
+				AWSs3Client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: value.Key})); 
+			});*/
 		}
  		console.log("Success: " + bucketName + " emptied.");
 	}catch (err) {
@@ -36,7 +39,7 @@ async function UXDelete() {
 	
 	// Delete S3 bucket
 	try {
-		const data = await AWSs3Client.send(new DeleteBucketCommand({ Bucket: bucketName }));
+		await AWSs3Client.send(new DeleteBucketCommand({ Bucket: bucketName }));
 		console.log("Success: " + bucketName + " bucket deleted.");
 	} catch (err) {
 		console.log("Error: ", err);
