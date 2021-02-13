@@ -55,7 +55,11 @@ sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/co
     walkSync(directoryToUpload, async function(filePath, stat) {
         let bucketPath = filePath.substring(directoryToUpload.length+1);
         let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath), ContentType: 'text/html', ACL:'public-read'};
- 
+
+		//get the file extension
+		extension = path.extname(bucketPath);
+		console.log(extension);
+
 		try {
 			const data = await AWSs3Client.send(new PutObjectCommand(params));
 			console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
