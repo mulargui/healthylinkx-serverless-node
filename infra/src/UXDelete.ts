@@ -25,17 +25,11 @@ async function UXDelete() {
 	try {
 		const { Contents } = await AWSs3Client.send(new ListObjectsCommand({ Bucket: bucketName }));
 		if (Contents.length > 0) {
-			Contents.forEach(function(value){
-				const data = await AWSs3Client.send(new DeleteObjectsCommand({ Bucket: bucketName, Key: value.Key})); 
+			Contents.forEach(async function(value){
+				await AWSs3Client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: value.Key})); 
 			});
-
-/*			
-			const data = await AWSs3Client.send(new DeleteObjectsCommand({ Bucket: bucketName },
-				{ Delete: { Objects: Contents.map((key) => ({ Key: key }))}}
-				//{ Delete: { Objects: Contents.map(({ Key }) => ({ Key }))}}
-			)); */
 		}
- 		return console.log("Success: " + bucketName + " emptied.");
+ 		console.log("Success: " + bucketName + " emptied.");
 	}catch (err) {
 		console.log("Error: ", err);
 	}
