@@ -1,5 +1,6 @@
 const UXCreate = require('./UXCreate.ts');
 const UXDelete = require('./UXDelete.ts');
+const UXUpdate = require('./UXUpdate.ts');
 
 function usage(){
 	console.log('Usage: healthylinkx-cli ds|api|ux|all delete|d|create|c|update|u');
@@ -57,7 +58,7 @@ case 'ux':
 	    break;
 	case 'update':
 	case 'u':
-		console.log('32');
+		UXUpdate();
 	    break;
 	default:
 		return usage();
