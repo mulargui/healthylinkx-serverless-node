@@ -1,7 +1,8 @@
 const constants = require('./envparams.ts');
 const {
 	RDSClient,
-	CreateDBInstanceCommand
+	CreateDBInstanceCommand,
+	DescribeDBInstancesCommand
 } = require("@aws-sdk/client-rds");
 const fs = require('fs');
 const path = require('path');
@@ -36,7 +37,7 @@ SGID=$(aws ec2 describe-security-groups --group-names DBSecGroup --query 'Securi
 	const client = new RDSClient(config);
 	
 	// Create the RDS instance
-    const params = {
+/*    const params = {
 		AllocatedStorage: 20, 
 		BackupRetentionPeriod: 0,
 		DBInstanceClass: 'db.t2.micro',
@@ -54,25 +55,21 @@ SGID=$(aws ec2 describe-security-groups --group-names DBSecGroup --query 'Securi
 		console.log(data);
 	} catch (err) {
 		console.log("Error: ", err);
+	}*/
+
+	try {
+		const data = await client.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+		//console.log("Success. healthylinkx-db created.");
+		console.log(data);
+	} catch (err) {
+		console.log("Error: ", err);
 	}
+
 }
 
 module.exports = DSCreate;
 
 /*
-
-#create mysql instance (and database)
-aws rds create-db-instance \
-	--db-instance-identifier healthylinkx-db \
-	--db-name healthylinkx \
-	--allocated-storage 20 \
-	--db-instance-class db.t2.micro \
-	--engine mysql \
-	--master-username $DBUSER \
-	--master-user-password $DBPWD \
-	--backup-retention-period 0 \
-	--vpc-security-group-ids $SGID \
-	--publicly-accessible
 
 #wait till the instance is provisioned
 aws rds wait db-instance-available \
