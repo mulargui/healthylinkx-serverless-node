@@ -2,7 +2,7 @@ const constants = require('./envparams.ts');
 const {
 	S3Client,
 	ListObjectsCommand,
-	DeleteObjectsCommand,
+	DeleteObjectCommand,
 	DeleteBucketCommand
 } = require("@aws-sdk/client-s3");
 
