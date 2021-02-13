@@ -23,7 +23,7 @@ async function UXDelete() {
   
 	// remove all files
 	try {
-		const Contents = await AWSs3Client.send(new ListObjectsCommand({ Bucket: bucketName }));
+		const {Contents} = await AWSs3Client.send(new ListObjectsCommand({ Bucket: bucketName }));
 			console.log(Contents);
 		if (Contents.length > 0) {
 			for (const value of Contents) {
