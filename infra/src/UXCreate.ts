@@ -57,8 +57,7 @@ sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/co
         let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath), ContentType: 'text/html', ACL:'public-read'};
 
 		//associate the content type related to the file extension
-		extension = path.extname(bucketPath);
-		switch (myArgs[0]) {
+		switch (path.extname(bucketPath)) {
 		case '.css':
 			params.ContentType='text/css';
 			break;
