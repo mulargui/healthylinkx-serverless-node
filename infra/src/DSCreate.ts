@@ -4,6 +4,12 @@ const {
 	CreateDBInstanceCommand,
 	DescribeDBInstancesCommand
 } = require("@aws-sdk/client-rds");
+const {
+	EC2Client,
+	DescribeVpcsCommand,
+	CreateSecurityGroupCommand,
+	AuthorizeSecurityGroupIngressCommand,
+} = require("@aws-sdk/client-ec2");
 const fs = require('fs');
 const path = require('path');
 
@@ -20,24 +26,8 @@ const directoryToUpload = constants.ROOT + '/ux/src';
 
 // ====== create the S3 bucket and copy files =====
 async function DSCreate() {
-/*  
-# In order to have public access to the DB
-# we need to create a security group (aka firewall)with an inbound rule 
-# protocol:TCP, Port:3306, Source: Anywhere (0.0.0.0/0)
-aws ec2 create-security-group --group-name DBSecGroup --description "MySQL Sec Group"
-aws ec2 authorize-security-group-ingress \
-	--group-name DBSecGroup \
-	--protocol tcp \
-	--port 3306 \
-	--cidr 0.0.0.0/0
 
-SGID=$(aws ec2 describe-security-groups --group-names DBSecGroup --query 'SecurityGroups[*].[GroupId]')
-*/
-	// Create an RDS client service object
-	const client = new RDSClient(config);
-	
-	// Create the RDS instance
-/*    const params = {
+	const rdsparams = {
 		AllocatedStorage: 20, 
 		BackupRetentionPeriod: 0,
 		DBInstanceClass: 'db.t2.micro',
@@ -47,19 +37,45 @@ SGID=$(aws ec2 describe-security-groups --group-names DBSecGroup --query 'Securi
 		MasterUsername: constants.DBUSER,
 		MasterUserPassword: constants.DBPWD,
 		PubliclyAccessible: true
-		//VpcSecurityGroupIds: ['']
+		//VpcSecurityGroupIds: []
 	};
-	try {
-		const data = await client.send(new CreateDBInstanceCommand(params));
-		console.log("Success. healthylinkx-db created.");
-		console.log(data);
-	} catch (err) {
-		console.log("Error: ", err);
-	}*/
+
 
 	try {
-		const data = await client.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+		//In order to have public access to the DB
+		//we need to create a security group (aka firewall)with an inbound rule 
+		//protocol:TCP, Port:3306, Source: Anywhere (0.0.0.0/0)
+		const ec2client = new EC2Client(config);
+		
+		const data = await ec2client.send(new CreateSecurityGroupCommand({ Description: 'MySQL Sec Group', GroupName: 'DBSecGroup'}));
+		rdsparams.VpcSecurityGroupIds[0] = data.GroupId;
+		console.log("Success. " + rdsparams.VpcSecurityGroupIds[0] + " created.");
+		
+		const paramsIngress = {
+			GroupId: data.GroupId,
+			IpPermissions: [{
+				IpProtocol: "tcp",
+				FromPort: 3306,
+				ToPort: 3306,
+				IpRanges: [{ CidrIp: "0.0.0.0/0" }],
+			}],
+		};
+		data = await ec2client.send( new AuthorizeSecurityGroupIngressCommand(paramsIngress));
+
+		// Create an RDS client service object
+		const rdsclient = new RDSClient(config);
+	
+		// Create the RDS instance
+		data = await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
+		console.log("Success. healthylinkx-db created.");
 		console.log(data.DBInstances[0].Endpoint.Address);
+
+		//wait till the instance is created
+		
+		//URL of the instance
+		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+		console.log(data.DBInstances[0].Endpoint.Address);
+
 	} catch (err) {
 		console.log("Error: ", err);
 	}
@@ -74,9 +90,6 @@ aws rds wait db-instance-available \
     --db-instance-identifier healthylinkx-db
 echo "MySQL provisioned!"
 
-#RDS instance endpoint
-ENDPOINT=$(aws rds describe-db-instances --db-instance-identifier healthylinkx-db --query "DBInstances[*].Endpoint.Address")
-	
 #unzip de data file
 unzip -o $ROOT/datastore/src/healthylinkxdump.sql -d $ROOT/datastore/src
 

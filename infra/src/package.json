@@ -4,6 +4,7 @@
 	"main": "index.ts",
 	"license": "MIT",
 	"dependencies": {
+		"@aws-sdk/client-ec2": "^3.5.0",
 		"@aws-sdk/client-s3": "^3.3.0",
 		"@aws-sdk/client-rds": "^3.5.0",
 		"@aws-sdk/node-http-handler": "^3.3.0",
