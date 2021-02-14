@@ -17,5 +17,11 @@
 	"devDependencies": {
 		"@types/node": "^14.0.23",
 		"typescript": "^4.0.2"
+	},
+	"scripts": {
+		"preinstall": "npx npm-force-resolutions"
+	},
+	"resolutions": {
+		"graceful-fs": "^4.2.4"
 	}
 }
