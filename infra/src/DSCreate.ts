@@ -71,16 +71,21 @@ async function DSCreate() {
 		await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
 		console.log("Success. healthylinkx-db created.");
 
+		//wait till the instance is created
+		//aws rds wait db-instance-available --db-instance-identifier healthylinkx-db
+		while(true) {
+			data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+			if (data.DBInstances[0].DBInstanceStatus  === 'available') break;
+			console.log("Waiting. healthylinkx-db " + data.DBInstances[0].DBInstanceStatus);
+			await sleep(30);
+		}
+		console.log("Success. healthylinkx-db provisioned.");
+	
 		//URL of the instance
 		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
 		var endpoint = data.DBInstances[0].Endpoint.Address;
 		console.log("DB endpoint: " + endpoint);
 
-		//wait till the instance is created
-		//aws rds wait db-instance-available --db-instance-identifier healthylinkx-db
-		await sleep(300);
-		console.log("Success. healthylinkx-db provisioned.");
-	
 		//unzip the file to dump on the database
 		fs.createReadStream(constants.ROOT + '/datastore/src/healthylinkxdump.sql.zip')
 			.pipe(unzip.Extract({ path: constants.ROOT + '/datastore/src' }));
@@ -107,7 +112,7 @@ async function DSCreate() {
 		fs.unlinkSync(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
 		
 	} catch (err) {
-		console.log("Error: ", err);
+		console.log("Error. ", err);
 	}
 }
 
