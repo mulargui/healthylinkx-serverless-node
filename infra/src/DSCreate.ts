@@ -59,12 +59,10 @@ SGID=$(aws ec2 describe-security-groups --group-names DBSecGroup --query 'Securi
 
 	try {
 		const data = await client.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
-		//console.log("Success. healthylinkx-db created.");
-		console.log(data);
+		console.log(data.DBInstances[0].Endpoint.Address);
 	} catch (err) {
 		console.log("Error: ", err);
 	}
-
 }
 
 module.exports = DSCreate;
