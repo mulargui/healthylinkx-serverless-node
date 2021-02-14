@@ -26,8 +26,43 @@ function sleep(secs) {
 	return new Promise(resolve => setTimeout(resolve, secs * 1000));
 }
 
-// ====== create MySQL database and add data =====
 async function DSCreate() {
+	//load the data (and schema) into the database
+	const mysqlparams = {
+		host: 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
+		user: constants.DBUSER,
+		password: constants.DBPWD,
+		database: 'healthylinkx'
+	};
+
+	const importer = new Importer(mysqlparams);
+
+	// New onProgress method, added in version 5.0!
+	importer.onProgress(progress=>{
+		var percent = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
+		console.log(`${percent}% Completed`);
+		console.log("total files: " + progress.total_files);
+		console.log("file number: " + progress.file_no);
+		console.log("bytes processed: " + progress.bytes_processed);
+		console.log("total bytes: " + progress.total_bytes);
+		console.log("path: " + progress.file_path);
+	});
+	importer.onDumpCompleted(data=>{
+		console.log("total files: " + data.total_files);
+		console.log("file number: " + data.file_no);
+		console.log("path: " + data.file_path);
+		console.log("error: " + data.error);
+	});
+	try {
+		await importer.import(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
+		console.log("Success. healthylinkx-db populated with data.");
+	} catch (err) {
+		console.log("Error. ", err);
+	}
+}
+
+// ====== create MySQL database and add data =====
+async function DSCreate2() {
 
 	var rdsparams = {
 		AllocatedStorage: 20, 
