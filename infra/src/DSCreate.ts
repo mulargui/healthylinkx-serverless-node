@@ -32,8 +32,8 @@ async function DSCreate() {
 		Engine: 'mysql',
 		MasterUsername: constants.DBUSER,
 		MasterUserPassword: constants.DBPWD,
-		PubliclyAccessible: true
-		//VpcSecurityGroupIds: [' ']
+		PubliclyAccessible: true,
+		VpcSecurityGroupIds: [' ']
 	};
 
 	try {
