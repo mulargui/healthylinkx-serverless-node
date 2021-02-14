@@ -105,7 +105,7 @@ async function DSCreate() {
 		//	var percent = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
 		//	console.log(`${percent}% Completed`);
 		//});
-		await importer.import(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
+		//await importer.import(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
 		console.log("Success. healthylinkx-db populated with data.");
 		
 		//delete the unzipped file
