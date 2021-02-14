@@ -7,7 +7,7 @@ const {
 const {
 	EC2Client,
 	CreateSecurityGroupCommand,
-	AuthorizeSecurityGroupIngressCommand,
+	AuthorizeSecurityGroupIngressCommand
 } = require("@aws-sdk/client-ec2");
 const fs = require('fs');
 const path = require('path');
