@@ -42,7 +42,7 @@ async function DSCreate() {
 		//protocol:TCP, Port:3306, Source: Anywhere (0.0.0.0/0)
 		const ec2client = new EC2Client(config);
 		
-		const data = await ec2client.send(new CreateSecurityGroupCommand({ Description: 'MySQL Sec Group', GroupName: 'DBSecGroup'}));
+		var data = await ec2client.send(new CreateSecurityGroupCommand({ Description: 'MySQL Sec Group', GroupName: 'DBSecGroup'}));
 		rdsparams.VpcSecurityGroupIds[0] = data.GroupId;
 		console.log("Success. " + rdsparams.VpcSecurityGroupIds[0] + " created.");
 		
