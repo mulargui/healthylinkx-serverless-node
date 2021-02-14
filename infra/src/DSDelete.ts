@@ -41,18 +41,21 @@ async function DSDelete() {
 
 		//wait till the instance is deleted
 		while(true) {
-			var data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
-			//if (data.DBInstances[0].DBInstanceStatus  === 'deleting') break;
-			console.log("Waiting. healthylinkx-db " + data.DBInstances[0].DBInstanceStatus);
-			await sleep(30);
+			try {
+				await sleep(30);
+				const data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+				console.log("Waiting. healthylinkx-db " + data.DBInstances[0].DBInstanceStatus);
+			} catch (err) {
+				break;
+			}
 		}
 		console.log("Success. healthylinkx-db deleted.");
 	
 		//delete the security group
 		const ec2client = new EC2Client(config);
 		
-		var data = await ec2client.send(new DescribeSecurityGroupsCommand({ GroupNames: ['DBSecGroup']}));
-		await ec2client.send(new DeleteSecurityGroupCommand({ GroupId: data.SecurityGroups[0].GroupId }));
+		const data = await ec2client.send(new DescribeSecurityGroupsCommand({GroupNames: ['DBSecGroup']}));
+		await ec2client.send(new DeleteSecurityGroupCommand({GroupId: data.SecurityGroups[0].GroupId }));
 		console.log("Success. " + data.SecurityGroups[0].GroupId + " deleted.");		
 
 	} catch (err) {
