@@ -11,6 +11,7 @@
 		"@aws-sdk/types": "^3.3.0",
 		"fs": "0.0.1-security",
 		"path": "^0.12.7",
+		"unzip": "^0.1.11",
 		"ts-node": "^9.0.0"
 	},
 	"devDependencies": {
