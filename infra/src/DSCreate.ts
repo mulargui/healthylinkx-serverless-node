@@ -41,7 +41,7 @@ async function DSCreate() {
 		//we need to create a security group (aka firewall)with an inbound rule 
 		//protocol:TCP, Port:3306, Source: Anywhere (0.0.0.0/0)
 		const ec2client = new EC2Client(config);
-		
+		/*
 		var data = await ec2client.send(new CreateSecurityGroupCommand({ Description: 'MySQL Sec Group', GroupName: 'DBSecGroup'}));
 		rdsparams.VpcSecurityGroupIds[0] = data.GroupId;
 		console.log("Success. " + rdsparams.VpcSecurityGroupIds[0] + " created.");
@@ -64,10 +64,9 @@ async function DSCreate() {
 		// Create the RDS instance
 		data = await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
 		console.log("Success. healthylinkx-db created.");
-		console.log(data.DBInstances[0].Endpoint.Address);
-
+*/
 		//URL of the instance
-		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+		var data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
 		console.log(data.DBInstances[0].Endpoint.Address);
 
 		//wait till the instance is created
