@@ -51,13 +51,12 @@ sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/co
 	 
 			await AWSs3Client.send(new PutObjectCommand(params));
 			console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
-		} 
+		});
 		
 		console.log("URL of the bucket: http://" + bucketName + ".s3-website-" + constants.AWS_REGION + ".amazonaws.com/");
 	} catch (err) {
 			console.log("Error. ", err);
-		}
-	});
+	}
 }
 
 module.exports = UXUpdate;
