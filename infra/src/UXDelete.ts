@@ -18,29 +18,26 @@ const bucketName = "healthylinkx";
 
 // ====== create the S3 bucket and copy files =====
 async function UXDelete() {
-	// Create an S3 client service object
-	const AWSs3Client = new S3Client(config);
   
-	// remove all files
 	try {
+		// Create an S3 client service object
+		const AWSs3Client = new S3Client(config);
+
+		// remove all files
 		const {Contents} = await AWSs3Client.send(new ListObjectsCommand({ Bucket: bucketName }));
 		if (Contents.length > 0) {
 			for (const value of Contents) {
 				await AWSs3Client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: value.Key})); 
-				console.log("Success: " + value.Key + " deleted.");
+				console.log("Success. " + value.Key + " deleted.");
 			}
 		}
  		console.log("Success: " + bucketName + " emptied.");
-	}catch (err) {
-		console.log("Error: ", err);
-	}
 	
-	// Delete S3 bucket
-	try {
+		// Delete S3 bucket
 		await AWSs3Client.send(new DeleteBucketCommand({ Bucket: bucketName }));
-		console.log("Success: " + bucketName + " bucket deleted.");
+		console.log("Success. " + bucketName + " bucket deleted.");
 	} catch (err) {
-		console.log("Error: ", err);
+		console.log("Error. ", err);
 	}
 }
 
