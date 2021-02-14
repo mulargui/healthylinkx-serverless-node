@@ -69,7 +69,7 @@ async function DSCreate() {
 	
 		// Create the RDS instance
 		await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
-		console.log("Success. healthylinkx-db created.");
+		console.log("Success. healthylinkx-db requested.");
 
 		//wait till the instance is created
 		//aws rds wait db-instance-available --db-instance-identifier healthylinkx-db
@@ -109,7 +109,7 @@ async function DSCreate() {
 		console.log("Success. healthylinkx-db populated with data.");
 		
 		//delete the unzipped file
-		fs.unlinkSync(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
+		fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
 		
 	} catch (err) {
 		console.log("Error. ", err);
