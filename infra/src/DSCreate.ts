@@ -22,8 +22,8 @@ const config = {
 };
 
 // ======== helper function ============
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+function sleep(secs) {
+	return new Promise(resolve => setTimeout(resolve, secs * 1000));
 }
 
 // ====== create MySQL database and add data =====
@@ -73,11 +73,12 @@ async function DSCreate() {
 
 		//URL of the instance
 		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
-		console.log(data.DBInstances[0].Endpoint.Address);
+		var endpoint = data.DBInstances[0].Endpoint.Address;
+		console.log("DB endpoint: " + endpoint);
 
 		//wait till the instance is created
 		//aws rds wait db-instance-available --db-instance-identifier healthylinkx-db
-		await sleep(300000);
+		await sleep(300);
 		console.log("Success. healthylinkx-db provisioned.");
 	
 		//unzip the file to dump on the database
@@ -86,7 +87,7 @@ async function DSCreate() {
 
 		//load the data (and schema) into the database
 		const mysqlparams = {
-			host: 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
+			host: endpoint,
 			user: constants.DBUSER,
 			password: constants.DBPWD,
 			database: 'healthylinkx'
