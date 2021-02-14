@@ -79,14 +79,19 @@ async function DSCreate() {
 			.pipe(unzip.Extract({ path: constants.ROOT + '/datastore/src' }));
 
 		//load the data (and schema) into the database
-		const mysqlparams = {
+		/*const mysqlparams = {
 			'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
 			constants.DBUSER,
 			constants.DBPWD,
 			'healthylinkx'
-		}
+		}*/
 
-		const importer = new Importer(mysqlparams);
+		const importer = new Importer({
+			'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
+			constants.DBUSER,
+			constants.DBPWD,
+			'healthylinkx'
+		});
 
 		// New onProgress method, added in version 5.0!
 		importer.onProgress(progress=>{
