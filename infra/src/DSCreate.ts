@@ -9,9 +9,9 @@ const {
 	CreateSecurityGroupCommand,
 	AuthorizeSecurityGroupIngressCommand
 } = require("@aws-sdk/client-ec2");
+const unzip = require('unzip');
 const fs = require('fs');
 const path = require('path');
-const unzip = require('unzip');
 
 // Set the AWS region and secrets
 const config = {
