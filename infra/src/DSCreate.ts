@@ -57,14 +57,14 @@ async function DSCreate() {
 		};
 		data = await ec2client.send( new AuthorizeSecurityGroupIngressCommand(paramsIngress));
 		console.log("Success. " + rdsparams.VpcSecurityGroupIds[0] + " authorized.");
-
+*/
 		// Create an RDS client service object
 		const rdsclient = new RDSClient(config);
 	
 		// Create the RDS instance
-		data = await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
+		//data = await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
 		console.log("Success. healthylinkx-db created.");
-*/
+
 		//URL of the instance
 		var data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
 		console.log(data.DBInstances[0].Endpoint.Address);
