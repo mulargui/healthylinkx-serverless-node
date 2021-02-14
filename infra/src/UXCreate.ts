@@ -46,7 +46,7 @@ sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/co
 		const AWSs3Client = new S3Client(config);
 
 		// Create S3 bucket
-		const data = await AWSs3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+		var data = await AWSs3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
 		console.log("Success. " + bucketName + " bucket created.");
 
 		//copy files
@@ -79,7 +79,7 @@ sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/co
 				break;
 			}
 
-			const data = await AWSs3Client.send(new PutObjectCommand(params));
+			data = await AWSs3Client.send(new PutObjectCommand(params));
 			console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
 		});
 	
@@ -91,7 +91,7 @@ sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/co
 			}
 		};
 
-		const data = await AWSs3Client.send(new PutBucketWebsiteCommand(staticHostParams));
+		data = await AWSs3Client.send(new PutBucketWebsiteCommand(staticHostParams));
 		console.log("Success. " + bucketName + " setup as a static web.");
 		
 		console.log("URL of the bucket: http://" + bucketName + ".s3-website-" + constants.AWS_REGION + ".amazonaws.com/");
