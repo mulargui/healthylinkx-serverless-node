@@ -2,6 +2,7 @@ const UXCreate = require('./UXCreate.ts');
 const UXDelete = require('./UXDelete.ts');
 const UXUpdate = require('./UXUpdate.ts');
 const DSCreate = require('./DSCreate.ts');
+const DSDelete = require('./DSDelete.ts');
 
 function usage(){
 	console.log('Usage: healthylinkx-cli ds|api|ux|all delete|d|create|c|update|u');
@@ -19,14 +20,15 @@ case 'ds':
 		break;
 	case 'delete':
 	case 'd':
-		console.log('11');
+		DSDelete();
 	    break;
 	case 'update':
 	case 'u':
-		console.log('12');
+		console.log('Not Implemented');
+		usage();
 	    break;
 	default:
-		return usage();
+		usage();
 	}
     break;
 case 'api':
@@ -44,7 +46,7 @@ case 'api':
 		console.log('22');
 	    break;
 	default:
-		return usage();
+		usage();
 	}
     break;
 case 'ux':
@@ -62,7 +64,7 @@ case 'ux':
 		UXUpdate();
 	    break;
 	default:
-		return usage();
+		usage();
 	}
     break;
 case 'all':
@@ -80,10 +82,10 @@ case 'all':
 		console.log('42');
 	    break;
 	default:
-		return usage();
+		usage();
 	}
     break;
 default:
-    return usage();
+    usage();
 }
 
