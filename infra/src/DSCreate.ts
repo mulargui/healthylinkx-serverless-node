@@ -12,6 +12,7 @@ const {
 const unzip = require('unzip');
 const fs = require('fs');
 const path = require('path');
+const Importer = require('mysql-import');
 
 // Set the AWS region and secrets
 const config = {
@@ -57,33 +58,53 @@ async function DSCreate() {
 		};
 		data = await ec2client.send( new AuthorizeSecurityGroupIngressCommand(paramsIngress));
 		console.log("Success. " + rdsparams.VpcSecurityGroupIds[0] + " authorized.");
-*/
+
 		// Create an RDS client service object
 		const rdsclient = new RDSClient(config);
 	
 		// Create the RDS instance
-		//data = await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
+		data = await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
 		console.log("Success. healthylinkx-db created.");
 
 		//URL of the instance
-		var data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
 		console.log(data.DBInstances[0].Endpoint.Address);
 
 		//wait till the instance is created
 		//aws rds wait db-instance-available --db-instance-identifier healthylinkx-db
 		console.log("Success. healthylinkx-db provisioned.");
-		
-		//unzip de data file
+*/		
+		//unzip the file to dump on the database
 		fs.createReadStream(constants.ROOT + '/datastore/src/healthylinkxdump.sql.zip')
 			.pipe(unzip.Extract({ path: constants.ROOT + '/datastore/src' }));
 
-/*
-#load the data (and schema) into the database
-mysql -h $ENDPOINT -u $DBUSER -p$DBPWD healthylinkx < $ROOT/datastore/src/healthylinkxdump.sql
+		//load the data (and schema) into the database
+		const mysqlparams = {
+			'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
+			constants.DBUSER,
+			constants.DBPWD,
+			'healthylinkx'
+		}
 
-#delete the unzipped file
-rm $ROOT/datastore/src/healthylinkxdump.sql
-*/
+		const importer = new Importer(mysqlparams);
+
+		// New onProgress method, added in version 5.0!
+		importer.onProgress(progress=>{
+			var percent = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
+			console.log(`${percent}% Completed`);
+		});
+
+		importer.import(constants.ROOT + '/datastore/src/healthylinkxdump.sql')
+			.then(()=>{
+				var files_imported = importer.getImported();
+				console.log(`${files_imported.length} SQL file(s) imported.`);
+			}).catch(err=>{
+				console.error(err);
+			});
+
+		//delete the unzipped file
+		fs.unlinkSync(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
+		
 	} catch (err) {
 		console.log("Error: ", err);
 	}

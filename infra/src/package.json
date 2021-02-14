@@ -12,6 +12,7 @@
 		"fs": "0.0.1-security",
 		"path": "^0.12.7",
 		"unzip": "^0.1.11",
+		"mysql-import": "^5.0.21",
 		"ts-node": "^9.0.0"
 	},
 	"devDependencies": {
