@@ -43,6 +43,7 @@ async function DSCreate() {
 	};
 
 	try {
+		
 		//In order to have public access to the DB
 		//we need to create a security group (aka firewall)with an inbound rule 
 		//protocol:TCP, Port:3306, Source: Anywhere (0.0.0.0/0)
@@ -94,10 +95,11 @@ async function DSCreate() {
 		// I really don't like this solution but all others I tried didn't work well => compromising!
 		exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${endpoint} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`, 
 			(err, stdout, stderr) => {
-				//delete the unzipped file
-				fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
 				if (err) { console.log("Error. ", err); }
 				else { console.log("Success. healthylinkx-db populated with data.");}
+				
+				//delete the unzipped file
+				//fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
 			});
 	} catch (err) {
 		console.log("Error. ", err);
