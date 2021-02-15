@@ -12,6 +12,7 @@ const {
 const unzip = require('unzip');
 const fs = require('fs');
 const path = require('path');
+const { exec } = require("child_process");
 
 // Set the AWS region and secrets
 const config = {
@@ -25,82 +26,9 @@ function sleep(secs) {
 	return new Promise(resolve => setTimeout(resolve, secs * 1000));
 }
 
-const { exec } = require("child_process");
 async function DSCreate() {
-	const host = 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com';
-	exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${host} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`, 
-		(err, stdout, stderr) => {
-			if (err) { console.error("Error. ", err); }
-		});
-}
-
-const mysql = require('mysql2/promise');
-async function DSCreate4() {
-
-	const mysqlparams = {
-		host: 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
-		user: constants.DBUSER,
-		password: constants.DBPWD,
-		database: 'healthylinkx'
-	};
-
-	var db = mysql.createPool(mysqlparams);
-
-	const query = fs.readFileSync(constants.ROOT + '/datastore/src/healthylinkxdump.sql').toString();
-	try {
-		await db.query(query);
-		console.log("Success. healthylinkx-db populated with data.");
-	} catch (err) {
-		console.log("Error. ", err);
-	}
-}
-
-const Importer = require('mysql-import');
-async function DSCreate3() {
-	//load the data (and schema) into the database
-	const mysqlparams = {
-		host: 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
-		user: constants.DBUSER,
-		password: constants.DBPWD,
-		database: 'healthylinkx'
-	};
-
-	const importer = new Importer(mysqlparams);
-
-	// New onProgress method, added in version 5.0!
-	importer.onProgress(progress=>{
-		const date = new Date();
-		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
-
-		const percent = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
-		console.log(`${percent}% Completed`);
-		console.log("total files: " + progress.total_files);
-		console.log("file number: " + progress.file_no);
-		console.log("bytes processed: " + progress.bytes_processed);
-		console.log("total bytes: " + progress.total_bytes);
-		console.log("path: " + progress.file_path);
-	});
-	importer.onDumpCompleted(data=>{
-		const date = new Date();
-		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
-
-		console.log("total files: " + data.total_files);
-		console.log("file number: " + data.file_no);
-		console.log("path: " + data.file_path);
-		console.log("error: " + data.error);
-	});
-	try {
-		var date = new Date();
-		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
-		
-		await importer.import(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
-
-		date = new Date();
-		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
-		console.log("Success. healthylinkx-db populated with data.");
-	} catch (err) {
-		console.log("Error. ", err);
-	}
+		//delete the unzipped file
+		fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
 }
 
 // ====== create MySQL database and add data =====
@@ -168,26 +96,14 @@ async function DSCreate2() {
 			.pipe(unzip.Extract({ path: constants.ROOT + '/datastore/src' }));
 
 		//load the data (and schema) into the database
-		const mysqlparams = {
-			host: endpoint,
-			user: constants.DBUSER,
-			password: constants.DBPWD,
-			database: 'healthylinkx'
-		};
-
-		const importer = new Importer(mysqlparams);
-
-		// New onProgress method, added in version 5.0!
-		//importer.onProgress(progress=>{
-		//	var percent = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
-		//	console.log(`${percent}% Completed`);
-		//});
-		//await importer.import(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
-		console.log("Success. healthylinkx-db populated with data.");
-		
-		//delete the unzipped file
-		fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
-		
+		// I really don't like this solution but all others I tried didn't work well => compromising!
+		exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${endpoint} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`, 
+			(err, stdout, stderr) => {
+				//delete the unzipped file
+				fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
+				if (err) { console.log("Error. ", err); }
+				else { console.log("Success. healthylinkx-db populated with data.");}
+			});
 	} catch (err) {
 		console.log("Error. ", err);
 	}
