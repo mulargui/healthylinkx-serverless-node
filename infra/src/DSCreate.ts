@@ -64,12 +64,12 @@ async function DSCreate() {
 		console.log("error: " + data.error);
 	});
 	try {
-		const date = new Date();
+		var date = new Date();
 		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
 		
 		await importer.import(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
 
-		const date = new Date();
+		date = new Date();
 		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
 		console.log("Success. healthylinkx-db populated with data.");
 	} catch (err) {
