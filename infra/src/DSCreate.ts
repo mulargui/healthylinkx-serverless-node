@@ -28,6 +28,15 @@ function sleep(secs) {
 }
 
 async function DSCreate() {
+	const host = 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com';
+	exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${host} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`, 
+		(err, stdout, stderr) => {
+			if (err) { console.error("Error. ", err); }
+		});
+}
+
+
+async function DSCreate4() {
 
 	const mysqlparams = {
 		host: 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
