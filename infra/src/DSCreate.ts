@@ -43,7 +43,10 @@ async function DSCreate() {
 
 	// New onProgress method, added in version 5.0!
 	importer.onProgress(progress=>{
-		var percent = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
+		const date = new Date();
+		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
+
+		const percent = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
 		console.log(`${percent}% Completed`);
 		console.log("total files: " + progress.total_files);
 		console.log("file number: " + progress.file_no);
@@ -52,13 +55,22 @@ async function DSCreate() {
 		console.log("path: " + progress.file_path);
 	});
 	importer.onDumpCompleted(data=>{
+		const date = new Date();
+		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
+
 		console.log("total files: " + data.total_files);
 		console.log("file number: " + data.file_no);
 		console.log("path: " + data.file_path);
 		console.log("error: " + data.error);
 	});
 	try {
+		const date = new Date();
+		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
+		
 		await importer.import(constants.ROOT + '/datastore/src/healthylinkxdump.sql');
+
+		const date = new Date();
+		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
 		console.log("Success. healthylinkx-db populated with data.");
 	} catch (err) {
 		console.log("Error. ", err);
