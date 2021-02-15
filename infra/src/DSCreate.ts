@@ -26,13 +26,8 @@ function sleep(secs) {
 	return new Promise(resolve => setTimeout(resolve, secs * 1000));
 }
 
-async function DSCreate() {
-		//delete the unzipped file
-		fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
-}
-
 // ====== create MySQL database and add data =====
-async function DSCreate2() {
+async function DSCreate() {
 
 	var rdsparams = {
 		AllocatedStorage: 20, 
