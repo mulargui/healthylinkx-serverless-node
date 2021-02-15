@@ -13,6 +13,7 @@ const unzip = require('unzip');
 const fs = require('fs');
 const path = require('path');
 const Importer = require('mysql-import');
+const mysql = require('mysql2/promise');
 
 // Set the AWS region and secrets
 const config = {
@@ -27,6 +28,30 @@ function sleep(secs) {
 }
 
 async function DSCreate() {
+
+	const mysqlparams = {
+		host: 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
+		user: constants.DBUSER,
+		password: constants.DBPWD,
+		database: 'healthylinkx'
+	};
+
+var db = mysql.createPool(mysqlparams);
+
+const query = fs.readFileSync(constants.ROOT + '/datastore/src/healthylinkxdump.sql').toString();
+	try {
+		await db.query(query);
+		console.log("Success. healthylinkx-db populated with data.");
+	} catch (err) {
+		console.log("Error. ", err);
+	}
+
+}
+
+
+
+
+async function DSCreate3() {
 	//load the data (and schema) into the database
 	const mysqlparams = {
 		host: 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
