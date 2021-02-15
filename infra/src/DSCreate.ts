@@ -12,8 +12,6 @@ const {
 const unzip = require('unzip');
 const fs = require('fs');
 const path = require('path');
-const Importer = require('mysql-import');
-const mysql = require('mysql2/promise');
 
 // Set the AWS region and secrets
 const config = {
@@ -27,6 +25,7 @@ function sleep(secs) {
 	return new Promise(resolve => setTimeout(resolve, secs * 1000));
 }
 
+const { exec } = require("child_process");
 async function DSCreate() {
 	const host = 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com';
 	exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${host} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`, 
@@ -35,7 +34,7 @@ async function DSCreate() {
 		});
 }
 
-
+const mysql = require('mysql2/promise');
 async function DSCreate4() {
 
 	const mysqlparams = {
@@ -45,21 +44,18 @@ async function DSCreate4() {
 		database: 'healthylinkx'
 	};
 
-var db = mysql.createPool(mysqlparams);
+	var db = mysql.createPool(mysqlparams);
 
-const query = fs.readFileSync(constants.ROOT + '/datastore/src/healthylinkxdump.sql').toString();
+	const query = fs.readFileSync(constants.ROOT + '/datastore/src/healthylinkxdump.sql').toString();
 	try {
 		await db.query(query);
 		console.log("Success. healthylinkx-db populated with data.");
 	} catch (err) {
 		console.log("Error. ", err);
 	}
-
 }
 
-
-
-
+const Importer = require('mysql-import');
 async function DSCreate3() {
 	//load the data (and schema) into the database
 	const mysqlparams = {
