@@ -27,6 +27,10 @@ function sleep(secs) {
 }
 
 async function DSCreate() {
+		//unzip the file to dump on the database
+		fs.createReadStream(constants.ROOT + '/datastore/src/healthylinkxdump.sql.zip')
+			.pipe(unzip.Extract({ path: constants.ROOT + '/datastore/src' }));
+
 	//load the data (and schema) into the database
 	const mysqlparams = {
 		host: 'healthylinkx-db.crsiqtv3f8gg.us-east-1.rds.amazonaws.com',
