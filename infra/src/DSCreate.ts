@@ -12,7 +12,7 @@ const {
 const unzip = require('unzip');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require("child_process");
+const exec = require('await-exec');
 
 // Set the AWS region and secrets
 const config = {
@@ -43,7 +43,6 @@ async function DSCreate() {
 	};
 
 	try {
-		
 		//In order to have public access to the DB
 		//we need to create a security group (aka firewall)with an inbound rule 
 		//protocol:TCP, Port:3306, Source: Anywhere (0.0.0.0/0)
@@ -73,7 +72,6 @@ async function DSCreate() {
 		console.log("Success. healthylinkx-db requested.");
 
 		//wait till the instance is created
-		//aws rds wait db-instance-available --db-instance-identifier healthylinkx-db
 		while(true) {
 			data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
 			if (data.DBInstances[0].DBInstanceStatus  === 'available') break;
@@ -93,14 +91,11 @@ async function DSCreate() {
 
 		//load the data (and schema) into the database
 		// I really don't like this solution but all others I tried didn't work well => compromising!
-		exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${endpoint} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`, 
-			(err, stdout, stderr) => {
-				if (err) { console.log("Error. ", err); }
-				else { console.log("Success. healthylinkx-db populated with data.");}
+		await exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${endpoint} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`); 
+		console.log("Success. healthylinkx-db populated with data.");
 				
-				//delete the unzipped file
-				//fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
-			});
+		//delete the unzipped file
+		await fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
 	} catch (err) {
 		console.log("Error. ", err);
 	}
