@@ -4,6 +4,7 @@ const UXUpdate = require('./UXUpdate.ts');
 const DSCreate = require('./DSCreate.ts');
 const DSDelete = require('./DSDelete.ts');
 const APICreate = require('./APICreate.ts');
+const APIDelete = require('./APIDelete.ts');
 
 function usage(){
 	console.log('Usage: healthylinkx-cli ds|api|ux|all delete|d|create|c|update|u');
@@ -40,7 +41,7 @@ case 'api':
 		break;
 	case 'delete':
 	case 'd':
-		console.log('21');
+		APIDelete();
 	    break;
 	case 'update':
 	case 'u':
