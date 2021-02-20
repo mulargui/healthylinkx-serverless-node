@@ -38,7 +38,6 @@ async function APICreate() {
 		const roleparams = {
 			AssumeRolePolicyDocument: '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}',
 			RoleName: 'healthylinkx-lambda'
-			}],
 		};
 		const iamclient = new IAMClient(config);
 		await iamclient.send(new CreateRoleCommand(roleparams));
