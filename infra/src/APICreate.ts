@@ -2,7 +2,8 @@ const constants = require('./envparams.ts');
 const {
 	RDSClient,
 	DescribeDBInstancesCommand
-} = require("@aws-sdk/client-rds");const { 
+} = require("@aws-sdk/client-rds");
+const { 
 	IAMClient, 
 	CreateRoleCommand 
 } = require("@aws-sdk/client-iam");
@@ -10,9 +11,7 @@ const {
     LambdaClient,
     CreateFunctionCommand
 } = require("@aws-sdk/client-lambda");
-const unzip = require('unzip');
 const fs = require('fs');
-const path = require('path');
 const exec = require('await-exec');
 const AdmZip = require('adm-zip');
 
