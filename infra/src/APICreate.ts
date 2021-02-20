@@ -23,6 +23,9 @@ const config = {
 	region: constants.AWS_REGION
 };
 
+//lamdba node dependencies
+const nodedependencies = 'mysql2 axios';
+
 // ======== helper function ============
 function sleep(secs) {
 	return new Promise(resolve => setTimeout(resolve, secs * 1000));
@@ -46,80 +49,70 @@ async function APICreate() {
 
 		//URL of the database
 		const rdsclient = new RDSClient(config);
-		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
-		var endpoint = data.DBInstances[0].Endpoint.Address;
+		//data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+		//var endpoint = data.DBInstances[0].Endpoint.Address;
+		//console.log("DB endpoint: " + endpoint);
 
 		// create contants.js with env values
 		
-		// install node dependencies
-		await exec(`cd ${constants.ROOT}/api/src; npm install mysql2 axios`);
+		// install api node language dependencies
+		await exec(`cd ${constants.ROOT}/api/src; npm install ${nodedependencies}`);
 
 		//package the lambdas (with zip)
 		//taxonomy
 		var file = new AdmZip();	
-		file.addLocalFile(constants.ROOT+'/taxonomy.js');
-		file.addLocalFile(constants.ROOT+'/constants.js');
-		file.addLocalFile(constants.ROOT+'/package-lock.json');
+		file.addLocalFile(constants.ROOT+'/api/src/taxonomy.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'taxonomy.zip');		
+		file.writeZip(constants.ROOT+'/api/src/taxonomy.zip');		
 		
 		//providers
-		var file = new AdmZip();	
-		file.addLocalFile(constants.ROOT+'/providers.js');
-		file.addLocalFile(constants.ROOT+'/constants.js');
-		file.addLocalFile(constants.ROOT+'/package-lock.json');
+		file = new AdmZip();	
+		file.addLocalFile(constants.ROOT+'/api/src/providers.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'providers.zip');	
+		file.writeZip(constants.ROOT+'/api/src/providers.zip');	
 		
 		//shortlist
-		var file = new AdmZip();	
-		file.addLocalFile(constants.ROOT+'/shortlist.js');
-		file.addLocalFile(constants.ROOT+'/constants.js');
-		file.addLocalFile(constants.ROOT+'/package-lock.json');
+		file = new AdmZip();	
+		file.addLocalFile(constants.ROOT+'/api/src/shortlist.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'shortlist.zip');	
+		file.writeZip(constants.ROOT+'/api/srcshortlist.zip');	
 		
 		//transaction
-		var file = new AdmZip();	
-		file.addLocalFile(constants.ROOT+'/transaction.js');
-		file.addLocalFile(constants.ROOT+'/constants.js');
-		file.addLocalFile(constants.ROOT+'/package-lock.json');
+		file = new AdmZip();	
+		file.addLocalFile(constants.ROOT+'/api/src/transaction.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'transaction.zip');		
+		file.writeZip(constants.ROOT+'/api/src/transaction.zip');		
 
 		//create the lambdas
 		const lambda = new LambdaClient(config);		
 		
-		//taxonomy 
-aws lambda create-function \
-	--function-name taxonomy \
-	--runtime nodejs12.x \
-	--handler taxonomy.handler \
-	--role arn:aws:iam::$AWS_ACCOUNT_ID:role/healthylinkx-lambda \
-	--zip-file fileb://$ROOT/api/src/taxonomy.zip
+		//create taxonomy lambda
+		// read the lambda zip file  
+		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/taxonomy.zip', 'utf8')
 
+		// Set the lambda parameters.
+		var params = {
+			Code: {
+				ZipFile: filecontent
+			},
+			FunctionName: 'taxonomy',
+			Handler: 'taxonomy.handler',
+			Role: 'arn:aws:iam::' + constants.AWS_ACCESS_KEY_ID + ':role/healthylinkx-lambda',
+			Runtime: 'nodejs12.x',
+			Description: 'Taxonomy api lambda'
+		};
 
-
+		//create the lambda
+		await lambda.send(new CreateFunctionCommand(params));
 	
-		//URL of the instance
-		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
-		var endpoint = data.DBInstances[0].Endpoint.Address;
-		console.log("DB endpoint: " + endpoint);
-
-		//unzip the file to dump on the database
-		await fs.createReadStream(constants.ROOT + '/datastore/src/healthylinkxdump.sql.zip')
-			.pipe(unzip.Extract({ path: constants.ROOT + '/datastore/src' }));
-
-		//load the data (and schema) into the database
-		// I really don't like this solution but all others I tried didn't work well => compromising!
-		exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${endpoint} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`, 
-			(err, stdout, stderr) => {
-				if (err) { console.log("Error. ", err); }
-				else { console.log("Success. healthylinkx-db populated with data.");}
-				
-				//delete the unzipped file
-				//fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
-			});
 	} catch (err) {
 		console.log("Error. ", err);
 	}
@@ -137,13 +130,6 @@ sed -i "s/ZIPCODETOKEN/$ZIPCODETOKEN/" $ROOT/api/src/constants.js
 
 
 
-#creating a taxonomy lambda with the package
-aws lambda create-function \
-	--function-name taxonomy \
-	--runtime nodejs12.x \
-	--handler taxonomy.handler \
-	--role arn:aws:iam::$AWS_ACCOUNT_ID:role/healthylinkx-lambda \
-	--zip-file fileb://$ROOT/api/src/taxonomy.zip
 
 #creating a providers lambda with the package
 aws lambda create-function \
