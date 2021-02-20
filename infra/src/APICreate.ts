@@ -40,7 +40,7 @@ async function APICreate() {
 			RoleName: 'healthylinkx-lambda'
 		};
 		const iamclient = new IAMClient(config);
-		await iamclient.send(new CreateRoleCommand(roleparams));
+		//await iamclient.send(new CreateRoleCommand(roleparams));
 		// wait a few seconds till the role is created. otherwise there is an error creating the lambda
 		await sleep(10);
 		console.log("Success. IAM role created.");
@@ -60,7 +60,7 @@ async function APICreate() {
 		//taxonomy
 		var file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/taxonomy.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.template.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/src/taxonomy.zip');		
@@ -68,7 +68,7 @@ async function APICreate() {
 		//providers
 		file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/providers.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.template.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/src/providers.zip');	
@@ -76,7 +76,7 @@ async function APICreate() {
 		//shortlist
 		file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/shortlist.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.template.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/srcshortlist.zip');	
@@ -84,7 +84,7 @@ async function APICreate() {
 		//transaction
 		file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/transaction.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.template.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/src/transaction.zip');		
