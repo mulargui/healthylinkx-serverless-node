@@ -103,7 +103,7 @@ async function APICreate() {
 			},
 			FunctionName: 'taxonomy',
 			Handler: 'taxonomy.handler',
-			Role: 'arn:aws:iam::' + constants.AWS_ACCESS_KEY_ID + ':role/healthylinkx-lambda',
+			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
 			Runtime: 'nodejs12.x',
 			Description: 'Taxonomy api lambda'
 		};
