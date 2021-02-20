@@ -40,7 +40,7 @@ async function APICreate() {
 			RoleName: 'healthylinkx-lambda'
 		};
 		const iamclient = new IAMClient(config);
-		//await iamclient.send(new CreateRoleCommand(roleparams));
+		await iamclient.send(new CreateRoleCommand(roleparams));
 		// wait a few seconds till the role is created. otherwise there is an error creating the lambda
 		await sleep(10);
 		console.log("Success. IAM role created.");
