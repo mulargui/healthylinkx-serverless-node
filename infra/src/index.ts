@@ -36,7 +36,7 @@ case 'api':
 	switch (myArgs[1]) {
 	case 'create':
 	case 'c':
-		await APICreate();
+		APICreate();
 		break;
 	case 'delete':
 	case 'd':
