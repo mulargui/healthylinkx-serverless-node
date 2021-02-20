@@ -94,7 +94,7 @@ async function APICreate() {
 		
 		//create taxonomy lambda
 		// read the lambda zip file  
-		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/taxonomy.zip', 'utf8')
+		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/taxonomy.zip');
 
 		// Set the lambda parameters.
 		var params = {
