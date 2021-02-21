@@ -53,8 +53,8 @@ async function APICreate() {
 		//URL of the database
 		const rdsclient = new RDSClient(config);
 		//data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
-		//var endpoint = data.DBInstances[0].Endpoint.Address;
-		var endpoint = 'temporal';
+		//const endpoint = data.DBInstances[0].Endpoint.Address;
+		const endpoint = 'temporal';
 		console.log("DB endpoint: " + endpoint);
 
 		// create contants.js with env values
@@ -80,7 +80,7 @@ async function APICreate() {
 		file.writeZip(constants.ROOT+'/api/src/taxonomy.zip');		
 		
 		//providers
-		file = new AdmZip();	
+		var file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/providers.js');
 		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
@@ -88,7 +88,7 @@ async function APICreate() {
 		file.writeZip(constants.ROOT+'/api/src/providers.zip');	
 		
 		//shortlist
-		file = new AdmZip();	
+		var file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/shortlist.js');
 		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
@@ -96,7 +96,7 @@ async function APICreate() {
 		file.writeZip(constants.ROOT+'/api/src/shortlist.zip');	
 		
 		//transaction
-		file = new AdmZip();	
+		var file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/transaction.js');
 		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
@@ -128,10 +128,10 @@ async function APICreate() {
 	
 		//create providers lambda
 		// read the lambda zip file  
-		filecontent = fs.readFileSync(constants.ROOT+'/api/src/providers.zip');
+		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/providers.zip');
 
 		// Set the lambda parameters.
-		params = {
+		var params = {
 			Code: {
 				ZipFile: filecontent
 			},

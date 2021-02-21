@@ -25,17 +25,14 @@ function sleep(secs) {
 // ====== create MySQL database and add data =====
 async function DSDelete() {
 
-	var rdsparams = {
-		DBInstanceIdentifier: 'healthylinkx-db',
-		SkipFinalSnapshot: true,
-		DeleteAutomatedBackups: true
-	};
-
 	try {
-		// Create an RDS client service object
-		const rdsclient = new RDSClient(config);
-	
 		// Delete the RDS instance
+		const rdsclient = new RDSClient(config);
+		var rdsparams = {
+			DBInstanceIdentifier: 'healthylinkx-db',
+			SkipFinalSnapshot: true,
+			DeleteAutomatedBackups: true
+		};
 		await rdsclient.send(new DeleteDBInstanceCommand(rdsparams));
 		console.log("Success. healthylinkx-db deletion requested.");
 
@@ -53,7 +50,6 @@ async function DSDelete() {
 	
 		//delete the security group
 		const ec2client = new EC2Client(config);
-		
 		const data = await ec2client.send(new DescribeSecurityGroupsCommand({GroupNames: ['DBSecGroup']}));
 		await ec2client.send(new DeleteSecurityGroupCommand({GroupId: data.SecurityGroups[0].GroupId }));
 		console.log("Success. " + data.SecurityGroups[0].GroupId + " deleted.");		
