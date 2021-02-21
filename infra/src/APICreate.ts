@@ -188,7 +188,7 @@ async function APICreate() {
 		//await fs.unlinkSync(path.join(constants.ROOT + '/api/src/constants.json'));
 		//await fs.rmdirSync(path.join(constants.ROOT + '/api/src/node_modules'), { recursive: true });
 		
-		await fs.unlinkSync(constants.ROOT + '/api/src/*.zip');
+		//await fs.unlinkSync(constants.ROOT + '/api/src/*.zip');
 		await fs.unlinkSync(constants.ROOT + '/api/src/package-lock.json');
 		await fs.unlinkSync(constants.ROOT + '/api/src/constants.json');
 		await fs.rmdirSync(constants.ROOT + '/api/src/node_modules', { recursive: true });
