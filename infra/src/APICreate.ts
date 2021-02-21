@@ -200,12 +200,18 @@ async function APICreate() {
 		//const apigwparams = {
 		//};
 		const data = await apigwclient.send(new CreateRestApiCommand({name: 'healthylinkx'}));
+		const gwid = data.id;
 		console.log("Success. API Gateway created.");
 		console.log(data);
 		
-		//APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
 		//PARENTRESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/'].id")
 
+		//create the resource (taxonomy)
+		//aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part taxonomy
+		//RESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/taxonomy'].id")
+
+		//create the method (GET)
+		//aws apigateway put-method --rest-api-id $APIID --resource-id $RESOURCEID --http-method GET --authorization-type NONE
 
 
 	} catch (err) {
@@ -216,12 +222,6 @@ async function APICreate() {
 /*
 
 
-#create the resource (taxonomy)
-aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part taxonomy
-RESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/taxonomy'].id")
-
-#create the method (GET)
-aws apigateway put-method --rest-api-id $APIID --resource-id $RESOURCEID --http-method GET --authorization-type NONE
 
 #link the lambda to the method
 LAMBDAARN=$(aws lambda list-functions --query "Functions[?FunctionName==\`taxonomy\`].FunctionArn")  
