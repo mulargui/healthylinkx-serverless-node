@@ -9,7 +9,8 @@ const {
 } = require("@aws-sdk/client-lambda");
 const {
     APIGatewayClient,
-    GetRestApisCommand
+    GetRestApisCommand,
+	DeleteRestApiCommand
 } = require("@aws-sdk/client-api-gateway");
 
 // Set the AWS region and secrets
@@ -34,9 +35,8 @@ async function APIDelete() {
 		// delete the api gateway
 		const apigwclient = new APIGatewayClient(config);
 		const data = await apigwclient.send(new GetRestApisCommand({}));
-		//APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
-		//aws apigateway delete-rest-api --rest-api-id $APIID
-		console.log(data);
+		await apigwclient.send(new DeleteRestApiCommand({restApiId: data.items[0].id}));
+		console.log("Success. API Gateway deleted.");
 		return;
 		
 		//delete the lambdas
