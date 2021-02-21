@@ -40,6 +40,43 @@ function sleep(secs) {
 	return new Promise(resolve => setTimeout(resolve, secs * 1000));
 }
 
+// ======== function to create a lambda ============
+async function CreateLambda(name)
+{
+	try {
+		//create the package
+		const file = new AdmZip();	
+		file.addLocalFile(constants.ROOT+'/api/src/' + name + '.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
+		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
+		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
+		file.writeZip(constants.ROOT+'/api/src/' + name + '.zip');		
+
+		// read the lambda zip file  
+		const filecontent = fs.readFileSync(constants.ROOT+'/api/src/' + name + '.zip');
+
+		//create the lambda
+		const params = {
+			Code: {
+				ZipFile: filecontent
+			},
+			FunctionName: name,
+			Handler: name + '.handler',
+			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
+			Runtime: 'nodejs12.x',
+			Description: name + ' api lambda'
+		};
+		const lambda = new LambdaClient(config);				
+		var data = await lambda.send(new CreateFunctionCommand(params));
+		console.log('Success. ' + name + ' lambda created.');
+		return data.FunctionArn;
+		
+	} catch (err) {
+		console.log("Error. ", err);
+		throw err;
+	}
+}
+
 // ====== create lambdas and API gateway =====
 async function APICreate() {
 
@@ -225,12 +262,12 @@ async function APICreate() {
 			resourceId: taxonomyid, restApiId: gwid, type: "AWS_PROXY",
 			integrationHttpMethod: 'POST',
 			uri: 'arn:aws:apigateway:'+ constants.AWS_REGION +':lambda:path/2015-03-31/functions/' + taxonomyLambdaArn + '/invocations'}));
-		console.log("Success. /taxonomy linked to the lambda.");
 
 		//allow apigateway to call the lambda
 		await lambda.send(new AddPermissionCommand({Action: 'lambda:InvokeFunction',
 			FunctionName: 'taxonomy', Principal: 'apigateway.amazonaws.com',
 			StatementId: 'api-lambda'}));
+		console.log("Success. /taxonomy linked to the lambda.");
 
 	} catch (err) {
 		console.log("Error. ", err);
