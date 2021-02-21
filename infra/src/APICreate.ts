@@ -13,7 +13,9 @@ const {
 } = require("@aws-sdk/client-lambda");
 const {
     APIGatewayClient,
-    CreateRestApiCommand
+    CreateRestApiCommand,
+	CreateResourceCommand,
+	GetResourcesCommand
 } = require("@aws-sdk/client-api-gateway");
 const fs = require('fs');
 const exec = require('await-exec');
@@ -197,14 +199,21 @@ async function APICreate() {
 */
 		//create the api gateway
 		const apigwclient = new APIGatewayClient(config);
-		//const apigwparams = {
-		//};
-		const data = await apigwclient.send(new CreateRestApiCommand({name: 'healthylinkx'}));
+		var data = await apigwclient.send(new CreateRestApiCommand({name: 'healthylinkx'}));
 		const gwid = data.id;
 		console.log("Success. API Gateway created.");
+
+		var data = await apigwclient.send(new GetResourcesCommand({restApiId:gwid}));
+
+
+		
+		//create the resource (taxonomy)
+		//var data = await apigwclient.send(new CreateResourceCommand({parentId: , pathPart: 'taxonomy', restApiId: gwid}));
 		console.log(data);
 		
 		//PARENTRESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/'].id")
+
+
 
 		//create the resource (taxonomy)
 		//aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part taxonomy
