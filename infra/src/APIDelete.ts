@@ -32,6 +32,12 @@ async function APIDelete() {
 		const lambda = new LambdaClient(config);		
 		await lambda.send(new DeleteFunctionCommand({FunctionName: 'taxonomy'}));
 		console.log("Success. Taxonomy lambda deleted.");
+		await lambda.send(new DeleteFunctionCommand({FunctionName: 'providers'}));
+		console.log("Success. Providers lambda deleted.");
+		await lambda.send(new DeleteFunctionCommand({FunctionName: 'shortlist'}));
+		console.log("Success. Shortlist lambda deleted.");
+		await lambda.send(new DeleteFunctionCommand({FunctionName: 'transaction'}));
+		console.log("Success. Transaction lambda deleted.");
 
 		//delete the IAM role
 		const iamclient = new IAMClient(config);

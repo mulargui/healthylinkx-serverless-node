@@ -16,6 +16,7 @@
 		"unzip": "^0.1.11",
 		"adm-zip": "^0.5.3",
 		"await-exec": "^0.1.2",
+		"replace-in-file": "^6.2.0",
 		"ts-node": "^9.0.0"
 	},
 	"devDependencies": {

@@ -14,6 +14,7 @@ const {
 const fs = require('fs');
 const exec = require('await-exec');
 const AdmZip = require('adm-zip');
+const replace = require('replace-in-file');
 
 // Set the AWS region and secrets
 const config = {
@@ -41,17 +42,27 @@ async function APICreate() {
 		};
 		const iamclient = new IAMClient(config);
 		await iamclient.send(new CreateRoleCommand(roleparams));
+		console.log("Success. IAM role created.");
 		// wait a few seconds till the role is created. otherwise there is an error creating the lambda
 		await sleep(10);
-		console.log("Success. IAM role created.");
 
 		//URL of the database
 		const rdsclient = new RDSClient(config);
 		//data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
 		//var endpoint = data.DBInstances[0].Endpoint.Address;
-		//console.log("DB endpoint: " + endpoint);
+		var endpoint = 'temporal';
+		console.log("DB endpoint: " + endpoint);
 
 		// create contants.js with env values
+		fs.copyFileSync(constants.ROOT+'/api/src/constants.template.js', constants.ROOT+'/api/src/constants.js');
+		const options = {
+			files: constants.ROOT+'/api/src/constants.js',
+			from: ['ENDPOINT', 'DBUSER', 'DBPWD', 'ZIPCODEAPI', 'ZIPCODETOKEN'],
+			to: [endpoint, constants.DBUSER, constants.DBPWD, constants.ZIPCODEAPI, constants.ZIPCODETOKEN]
+		};
+		await replace(options);
+		console.log("Success. Constants updated.");
+		return;
 		
 		// install api node language dependencies
 		await exec(`cd ${constants.ROOT}/api/src; npm install ${nodedependencies}`);
@@ -60,7 +71,7 @@ async function APICreate() {
 		//taxonomy
 		var file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/taxonomy.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.template.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/src/taxonomy.zip');		
@@ -68,7 +79,7 @@ async function APICreate() {
 		//providers
 		file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/providers.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.template.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/src/providers.zip');	
@@ -76,7 +87,7 @@ async function APICreate() {
 		//shortlist
 		file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/shortlist.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.template.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/srcshortlist.zip');	
@@ -84,7 +95,7 @@ async function APICreate() {
 		//transaction
 		file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/transaction.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.template.js');
+		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/src/transaction.zip');		
@@ -110,55 +121,80 @@ async function APICreate() {
 
 		//create the lambda
 		await lambda.send(new CreateFunctionCommand(params));
+		console.log("Success. Taxonomy lambda created.");
 	
+		//create providers lambda
+		// read the lambda zip file  
+		filecontent = fs.readFileSync(constants.ROOT+'/api/src/providers.zip');
+
+		// Set the lambda parameters.
+		params = {
+			Code: {
+				ZipFile: filecontent
+			},
+			FunctionName: 'providers',
+			Handler: 'providers.handler',
+			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
+			Runtime: 'nodejs12.x',
+			Description: 'providers api lambda'
+		};
+
+		//create the lambda
+		await lambda.send(new CreateFunctionCommand(params));
+		console.log("Success. Providers lambda created.");
+
+		//create shortlist lambda
+		// read the lambda zip file  
+		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/shortlist.zip');
+
+		// Set the lambda parameters.
+		var params = {
+			Code: {
+				ZipFile: filecontent
+			},
+			FunctionName: 'shortlist',
+			Handler: 'shortlist.handler',
+			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
+			Runtime: 'nodejs12.x',
+			Description: 'shortlist api lambda'
+		};
+
+		//create the lambda
+		await lambda.send(new CreateFunctionCommand(params));
+		console.log("Success. Shortlist lambda created.");
+
+		//create transaction lambda
+		// read the lambda zip file  
+		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/transaction.zip');
+
+		// Set the lambda parameters.
+		var params = {
+			Code: {
+				ZipFile: filecontent
+			},
+			FunctionName: 'transaction',
+			Handler: 'transaction.handler',
+			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
+			Runtime: 'nodejs12.x',
+			Description: 'transaction api lambda'
+		};
+
+		//create the lambda
+		await lambda.send(new CreateFunctionCommand(params));
+		console.log("Success. Transaction lambda created.");
+		
+		// cleanup of files created
+		await fs.unlinkSync(path.join(constants.ROOT + '/api/src/*.zip'));
+		await fs.unlinkSync(path.join(constants.ROOT + '/api/src/package-lock.json'));
+		await fs.unlinkSync(path.join(constants.ROOT + '/api/src/constants.json'));
+		await fs.rmdirSync(path.join(constants.ROOT + '/api/src/node_modules'), { recursive: true });
+
 	} catch (err) {
 		console.log("Error. ", err);
 	}
 }
 
 /*
-
-# create contants.js with env values
-ENDPOINT=$(aws rds describe-db-instances --db-instance-identifier healthylinkx-db --query "DBInstances[*].Endpoint.Address")
-sed "s/ENDPOINT/$ENDPOINT/" $ROOT/api/src/constants.template.js > $ROOT/api/src/constants.js
-sed -i "s/DBUSER/$DBUSER/" $ROOT/api/src/constants.js
-sed -i "s/DBPWD/$DBPWD/" $ROOT/api/src/constants.js
-sed -i "s/ZIPCODEAPI/$ZIPCODEAPI/" $ROOT/api/src/constants.js
-sed -i "s/ZIPCODETOKEN/$ZIPCODETOKEN/" $ROOT/api/src/constants.js
-
-
-
-
-#creating a providers lambda with the package
-aws lambda create-function \
-	--function-name providers \
-	--runtime nodejs12.x \
-	--handler providers.handler \
-	--role arn:aws:iam::$AWS_ACCOUNT_ID:role/healthylinkx-lambda \
-	--zip-file fileb://$ROOT/api/src/providers.zip
-
-
-#creating a shortlist lambda with the package
-aws lambda create-function \
-	--function-name shortlist \
-	--runtime nodejs12.x \
-	--handler shortlist.handler \
-	--role arn:aws:iam::$AWS_ACCOUNT_ID:role/healthylinkx-lambda \
-	--zip-file fileb://$ROOT/api/src/shortlist.zip
-
-#creating a transaction lambda with the package
-aws lambda create-function \
-	--function-name transaction \
-	--runtime nodejs12.x \
-	--handler transaction.handler \
-	--role arn:aws:iam::$AWS_ACCOUNT_ID:role/healthylinkx-lambda \
-	--zip-file fileb://$ROOT/api/src/transaction.zip
-
-# cleanup
-rm $ROOT/api/src/*.zip
-rm $ROOT/api/src/package-lock.json
-rm $ROOT/api/src/constants.js
-rm -r $ROOT/api/src/node_modules
 
 #create the REST apigateway
 aws apigateway create-rest-api --name healthylinkx

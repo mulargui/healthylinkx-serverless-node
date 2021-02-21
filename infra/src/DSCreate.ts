@@ -94,7 +94,7 @@ async function DSCreate() {
 		await exec(`mysql -u${constants.DBUSER} -p${constants.DBPWD} -h${endpoint} healthylinkx < ${constants.ROOT + '/datastore/src/healthylinkxdump.sql'}`); 
 		console.log("Success. healthylinkx-db populated with data.");
 				
-		//delete the unzipped file
+		//cleanup. delete the unzipped file
 		await fs.unlinkSync(path.join(constants.ROOT + '/datastore/src/healthylinkxdump.sql'));
 	} catch (err) {
 		console.log("Error. ", err);
