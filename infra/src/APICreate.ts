@@ -107,6 +107,7 @@ async function AddEndpoint(gwid, endpoint, lambdaArn) {
 			uri: 'arn:aws:apigateway:'+ constants.AWS_REGION +':lambda:path/2015-03-31/functions/' + lambdaArn + '/invocations'}));
 
 		//allow apigateway to call the lambda
+		const lambda = new LambdaClient(config);				
 		await lambda.send(new AddPermissionCommand({Action: 'lambda:InvokeFunction',
 			FunctionName: endpoint, Principal: 'apigateway.amazonaws.com',
 			StatementId: 'api-lambda'}));
