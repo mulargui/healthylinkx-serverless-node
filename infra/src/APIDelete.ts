@@ -27,6 +27,9 @@ function sleep(secs) {
 async function APIDelete() {
 
 	try {
+		// delete the api gateway
+		//APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
+		//aws apigateway delete-rest-api --rest-api-id $APIID
 		
 		//delete the lambdas
 		const lambda = new LambdaClient(config);		
