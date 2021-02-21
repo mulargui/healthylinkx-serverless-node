@@ -13,7 +13,7 @@ const {
 } = require("@aws-sdk/client-lambda");
 const {
     APIGatewayClient,
-    CreateFunctionCommand
+    CreateRestApiCommand
 } = require("@aws-sdk/client-api-gateway");
 const fs = require('fs');
 const exec = require('await-exec');
