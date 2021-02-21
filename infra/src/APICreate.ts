@@ -85,6 +85,8 @@ async function CreateLambda(name)
 async function AddEndpoint(gwid, endpoint, lambdaArn) {
 	try {
 				
+		const apigwclient = new APIGatewayClient(config);
+
 		// id of '/' path 
 		var data = await apigwclient.send(new GetResourcesCommand({restApiId:gwid}));
 		const rootpathid = data.items[0].id;
