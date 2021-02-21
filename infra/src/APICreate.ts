@@ -182,6 +182,7 @@ async function APICreate() {
 		
 		//deploy all
 		await apigwclient.send(new CreateDeploymentCommand({restApiId: gwid}));
+		console.log("Success. API Gateway deployed.");
 
 		console.log('URL of the api: https://' + gwid + '.execute-api.' + constants.AWS_REGION + '.amazonaws.com/prod/');
 
