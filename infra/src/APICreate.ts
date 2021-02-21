@@ -209,15 +209,13 @@ async function APICreate() {
 		
 		//create the resource (/taxonomy)
 		var data = await apigwclient.send(new CreateResourceCommand({parentId: rootpathid, pathPart: 'taxonomy', restApiId: gwid}));
-		console.log(data);
-		
-		//create the resource (taxonomy)
-		//aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part taxonomy
-		//RESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/taxonomy'].id")
+		const taxonomyid = data.id;
+		console.log("Success. /taxonomy created.");
 
 		//create the method (GET)
-		//aws apigateway put-method --rest-api-id $APIID --resource-id $RESOURCEID --http-method GET --authorization-type NONE
-
+		var data = await apigwclient.send(new PutMethodCommand({authorizationType: 'NONE', httpMethod: 'GET', resourceId: taxonomyid, restApiId: gwid}));
+		console.log(data);
+		
 
 	} catch (err) {
 		console.log("Error. ", err);
