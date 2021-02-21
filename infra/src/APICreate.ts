@@ -113,14 +113,6 @@ async function APICreate() {
 		await exec(`cd ${constants.ROOT}/api/src; npm install ${nodedependencies}`);
 
 		//package the lambdas (with zip)
-		//taxonomy
-		var file = new AdmZip();	
-		file.addLocalFile(constants.ROOT+'/api/src/taxonomy.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
-		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
-		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'/api/src/taxonomy.zip');		
-		
 		//providers
 		var file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/providers.js');
@@ -148,26 +140,8 @@ async function APICreate() {
 		//create the lambdas
 		const lambda = new LambdaClient(config);		
 		
-		//create taxonomy lambda
-		// read the lambda zip file  
-		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/taxonomy.zip');
-
-		// Set the lambda parameters.
-		var params = {
-			Code: {
-				ZipFile: filecontent
-			},
-			FunctionName: 'taxonomy',
-			Handler: 'taxonomy.handler',
-			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
-			Runtime: 'nodejs12.x',
-			Description: 'Taxonomy api lambda'
-		};
-
-		//create the lambda
-		var data = await lambda.send(new CreateFunctionCommand(params));
-		const taxonomyLambdaArn = data.FunctionArn;
-		console.log("Success. Taxonomy lambda created.");
+		//create the lambdas
+		const taxonomyLambdaArn = await CreateLambda('taxonomy');
 	
 		//create providers lambda
 		// read the lambda zip file  
