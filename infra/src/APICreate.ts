@@ -69,7 +69,46 @@ async function CreateLambda(name)
 		const lambda = new LambdaClient(config);				
 		var data = await lambda.send(new CreateFunctionCommand(params));
 		console.log('Success. ' + name + ' lambda created.');
+		
+		//remove the package created
+		await fs.unlinkSync(constants.ROOT + '/api/src/' + name + '.zip');
+
 		return data.FunctionArn;
+		
+	} catch (err) {
+		console.log("Error. ", err);
+		throw err;
+	}
+}
+
+// ====== create enpoint in api gateway =====
+async function AddEndpoint(gwid, endpoint, lambdaArn) {
+	try {
+				
+		// id of '/' path 
+		var data = await apigwclient.send(new GetResourcesCommand({restApiId:gwid}));
+		const rootpathid = data.items[0].id;
+		
+		//create the resource (/endpoint)
+		var data = await apigwclient.send(new CreateResourceCommand({parentId: rootpathid, pathPart: endpoint, restApiId: gwid}));
+		const endpointid = data.id;
+		console.log("Success. /' + endpoint + ' created.");
+
+		//create the method (GET)
+		var data = await apigwclient.send(new PutMethodCommand({authorizationType: 'NONE', 
+			httpMethod: 'GET', resourceId: endpointid, restApiId: gwid}));
+		
+		//link the lambda to the method
+		var data = await apigwclient.send(new PutIntegrationCommand({httpMethod: 'GET',
+			resourceId: endpointid, restApiId: gwid, type: "AWS_PROXY",
+			integrationHttpMethod: 'POST',
+			uri: 'arn:aws:apigateway:'+ constants.AWS_REGION +':lambda:path/2015-03-31/functions/' + lambdaArn + '/invocations'}));
+
+		//allow apigateway to call the lambda
+		await lambda.send(new AddPermissionCommand({Action: 'lambda:InvokeFunction',
+			FunctionName: endpoint, Principal: 'apigateway.amazonaws.com',
+			StatementId: 'api-lambda'}));
+		console.log("Success. /' + endpoint + ' linked to the lambda.");
 		
 	} catch (err) {
 		console.log("Error. ", err);
@@ -112,102 +151,13 @@ async function APICreate() {
 		// install api node language dependencies
 		await exec(`cd ${constants.ROOT}/api/src; npm install ${nodedependencies}`);
 
-		//package the lambdas (with zip)
-		//providers
-		var file = new AdmZip();	
-		file.addLocalFile(constants.ROOT+'/api/src/providers.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
-		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
-		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'/api/src/providers.zip');	
-		
-		//shortlist
-		var file = new AdmZip();	
-		file.addLocalFile(constants.ROOT+'/api/src/shortlist.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
-		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
-		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'/api/src/shortlist.zip');	
-		
-		//transaction
-		var file = new AdmZip();	
-		file.addLocalFile(constants.ROOT+'/api/src/transaction.js');
-		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
-		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
-		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'/api/src/transaction.zip');		
-
-		//create the lambdas
-		const lambda = new LambdaClient(config);		
-		
 		//create the lambdas
 		const taxonomyLambdaArn = await CreateLambda('taxonomy');
-	
-		//create providers lambda
-		// read the lambda zip file  
-		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/providers.zip');
-
-		// Set the lambda parameters.
-		var params = {
-			Code: {
-				ZipFile: filecontent
-			},
-			FunctionName: 'providers',
-			Handler: 'providers.handler',
-			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
-			Runtime: 'nodejs12.x',
-			Description: 'providers api lambda'
-		};
-
-		//create the lambda
-		await lambda.send(new CreateFunctionCommand(params));
-		console.log("Success. Providers lambda created.");
-
-		//create shortlist lambda
-		// read the lambda zip file  
-		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/shortlist.zip');
-
-		// Set the lambda parameters.
-		var params = {
-			Code: {
-				ZipFile: filecontent
-			},
-			FunctionName: 'shortlist',
-			Handler: 'shortlist.handler',
-			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
-			Runtime: 'nodejs12.x',
-			Description: 'shortlist api lambda'
-		};
-
-		//create the lambda
-		await lambda.send(new CreateFunctionCommand(params));
-		console.log("Success. Shortlist lambda created.");
-
-		//create transaction lambda
-		// read the lambda zip file  
-		var filecontent = fs.readFileSync(constants.ROOT+'/api/src/transaction.zip');
-
-		// Set the lambda parameters.
-		var params = {
-			Code: {
-				ZipFile: filecontent
-			},
-			FunctionName: 'transaction',
-			Handler: 'transaction.handler',
-			Role: 'arn:aws:iam::' + constants.AWS_ACCOUNT_ID + ':role/healthylinkx-lambda',
-			Runtime: 'nodejs12.x',
-			Description: 'transaction api lambda'
-		};
-
-		//create the lambda
-		await lambda.send(new CreateFunctionCommand(params));
-		console.log("Success. Transaction lambda created.");
-		
+		const providersLambdaArn = await CreateLambda('providers');
+		const shortlistLambdaArn = await CreateLambda('shortlist');
+		const transactionLambdaArn = await CreateLambda('transaction');
+			
 		// cleanup of files created	
-		await fs.unlinkSync(constants.ROOT + '/api/src/taxonomy.zip');
-		await fs.unlinkSync(constants.ROOT + '/api/src/providers.zip');
-		await fs.unlinkSync(constants.ROOT + '/api/src/shortlist.zip');
-		await fs.unlinkSync(constants.ROOT + '/api/src/transaction.zip');
 		await fs.unlinkSync(constants.ROOT + '/api/src/package-lock.json');
 		await fs.unlinkSync(constants.ROOT + '/api/src/constants.js');
 		await fs.rmdirSync(constants.ROOT + '/api/src/node_modules', { recursive: true });
@@ -218,30 +168,11 @@ async function APICreate() {
 		const gwid = data.id;
 		console.log("Success. API Gateway created.");
 
-		// id of '/' path 
-		var data = await apigwclient.send(new GetResourcesCommand({restApiId:gwid}));
-		const rootpathid = data.items[0].id;
-		
-		//create the resource (/taxonomy)
-		var data = await apigwclient.send(new CreateResourceCommand({parentId: rootpathid, pathPart: 'taxonomy', restApiId: gwid}));
-		const taxonomyid = data.id;
-		console.log("Success. /taxonomy created.");
-
-		//create the method (GET)
-		var data = await apigwclient.send(new PutMethodCommand({authorizationType: 'NONE', 
-			httpMethod: 'GET', resourceId: taxonomyid, restApiId: gwid}));
-		
-		//link the lambda to the method
-		var data = await apigwclient.send(new PutIntegrationCommand({httpMethod: 'GET',
-			resourceId: taxonomyid, restApiId: gwid, type: "AWS_PROXY",
-			integrationHttpMethod: 'POST',
-			uri: 'arn:aws:apigateway:'+ constants.AWS_REGION +':lambda:path/2015-03-31/functions/' + taxonomyLambdaArn + '/invocations'}));
-
-		//allow apigateway to call the lambda
-		await lambda.send(new AddPermissionCommand({Action: 'lambda:InvokeFunction',
-			FunctionName: 'taxonomy', Principal: 'apigateway.amazonaws.com',
-			StatementId: 'api-lambda'}));
-		console.log("Success. /taxonomy linked to the lambda.");
+		//create the endpoints
+		await AddEndpoint(gwid, 'taxonomy', taxonomyLambdaArn);
+		await AddEndpoint(gwid, 'providers', providersLambdaArn);
+		await AddEndpoint(gwid, 'shortlist', shortlistLambdaArn);
+		await AddEndpoint(gwid, 'transaction', transactionLambdaArn);
 
 	} catch (err) {
 		console.log("Error. ", err);
