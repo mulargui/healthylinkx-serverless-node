@@ -62,7 +62,6 @@ async function APICreate() {
 		};
 		await replace(options);
 		console.log("Success. Constants updated.");
-		return;
 		
 		// install api node language dependencies
 		await exec(`cd ${constants.ROOT}/api/src; npm install ${nodedependencies}`);
