@@ -11,6 +11,10 @@ const {
     LambdaClient,
     CreateFunctionCommand
 } = require("@aws-sdk/client-lambda");
+const {
+    APIGatewayClient,
+    CreateFunctionCommand
+} = require("@aws-sdk/client-api-gateway");
 const fs = require('fs');
 const exec = require('await-exec');
 const AdmZip = require('adm-zip');
@@ -36,11 +40,11 @@ async function APICreate() {
 
 	try {
 		//create a IAM role under which the lambdas will run
+/*		const iamclient = new IAMClient(config);
 		const roleparams = {
 			AssumeRolePolicyDocument: '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}',
 			RoleName: 'healthylinkx-lambda'
 		};
-		const iamclient = new IAMClient(config);
 		await iamclient.send(new CreateRoleCommand(roleparams));
 		console.log("Success. IAM role created.");
 		// wait a few seconds till the role is created. otherwise there is an error creating the lambda
@@ -190,6 +194,18 @@ async function APICreate() {
 		await fs.unlinkSync(constants.ROOT + '/api/src/package-lock.json');
 		await fs.unlinkSync(constants.ROOT + '/api/src/constants.js');
 		await fs.rmdirSync(constants.ROOT + '/api/src/node_modules', { recursive: true });
+*/
+		//create the api gateway
+		const apigwclient = new APIGatewayClient(config);
+		//const apigwparams = {
+		//};
+		const data = await apigwclient.send(new CreateRestApiCommand({name: 'healthylinkx'}));
+		console.log("Success. API Gateway created." + data);
+		
+		//APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
+		//PARENTRESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/'].id")
+
+
 
 	} catch (err) {
 		console.log("Error. ", err);
@@ -198,10 +214,6 @@ async function APICreate() {
 
 /*
 
-#create the REST apigateway
-aws apigateway create-rest-api --name healthylinkx
-APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
-PARENTRESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/'].id")
 
 #create the resource (taxonomy)
 aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part taxonomy
