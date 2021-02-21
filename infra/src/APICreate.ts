@@ -182,15 +182,13 @@ async function APICreate() {
 		await lambda.send(new CreateFunctionCommand(params));
 		console.log("Success. Transaction lambda created.");
 		
-		// cleanup of files created
-		//await fs.unlinkSync(path.join(constants.ROOT + '/api/src/*.zip'));
-		//await fs.unlinkSync(path.join(constants.ROOT + '/api/src/package-lock.json'));
-		//await fs.unlinkSync(path.join(constants.ROOT + '/api/src/constants.json'));
-		//await fs.rmdirSync(path.join(constants.ROOT + '/api/src/node_modules'), { recursive: true });
-		
-		//await fs.unlinkSync(constants.ROOT + '/api/src/*.zip');
+		// cleanup of files created	
+		await fs.unlinkSync(constants.ROOT + '/api/src/taxonomy.zip');
+		await fs.unlinkSync(constants.ROOT + '/api/src/providers.zip');
+		await fs.unlinkSync(constants.ROOT + '/api/src/shortlist.zip');
+		await fs.unlinkSync(constants.ROOT + '/api/src/transaction.zip');
 		await fs.unlinkSync(constants.ROOT + '/api/src/package-lock.json');
-		await fs.unlinkSync(constants.ROOT + '/api/src/constants.json');
+		await fs.unlinkSync(constants.ROOT + '/api/src/constants.js');
 		await fs.rmdirSync(constants.ROOT + '/api/src/node_modules', { recursive: true });
 
 	} catch (err) {
