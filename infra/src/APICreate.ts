@@ -89,7 +89,7 @@ async function APICreate() {
 		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
 		file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
-		file.writeZip(constants.ROOT+'/api/srcshortlist.zip');	
+		file.writeZip(constants.ROOT+'/api/src/shortlist.zip');	
 		
 		//transaction
 		file = new AdmZip();	
