@@ -128,8 +128,8 @@ async function APICreate() {
 
 		//create the lambda
 		var data = await lambda.send(new CreateFunctionCommand(params));
+		const taxonomyLambdaArn = data.FunctionArn;
 		console.log("Success. Taxonomy lambda created.");
-		console.log(data);
 	
 		//create providers lambda
 		// read the lambda zip file  
@@ -218,14 +218,16 @@ async function APICreate() {
 		//create the method (GET)
 		var data = await apigwclient.send(new PutMethodCommand({authorizationType: 'NONE', 
 			httpMethod: 'GET', resourceId: taxonomyid, restApiId: gwid}));
-		console.log(data);
-		return;
+		
 		//link the lambda to the method
-		//LAMBDAARN=$(aws lambda list-functions --query "Functions[?FunctionName==\`taxonomy\`].FunctionArn")  
 		var data = await apigwclient.send(new PutIntegrationCommand({httpMethod: 'GET',
 			resourceId: taxonomyid, restApiId: gwid, type: "AWS_PROXY",
 			integrationHttpMethod: 'POST',
-			uri: 'arn:aws:apigateway:'+ constants.AWS_REGION +':lambda:path/2015-03-31/functions/' + 'LAMBDAARN' + '/invocations'}));
+			uri: 'arn:aws:apigateway:'+ constants.AWS_REGION +':lambda:path/2015-03-31/functions/' + taxonomyLambdaArn + '/invocations'}));
+		console.log("Success. /taxonomy linked to the lambda.");
+
+		//allow apigateway to call the lambda
+		//aws lambda add-permission --function-name taxonomy --action lambda:InvokeFunction --statement-id api-lambda --principal apigateway.amazonaws.com
 
 	} catch (err) {
 		console.log("Error. ", err);
@@ -234,16 +236,6 @@ async function APICreate() {
 
 /*
 
-
-
-#link the lambda to the method
-LAMBDAARN=$(aws lambda list-functions --query "Functions[?FunctionName==\`taxonomy\`].FunctionArn")  
-aws apigateway put-integration --rest-api-id $APIID --resource-id $RESOURCEID \
-    --http-method GET --type AWS_PROXY --integration-http-method POST \
-    --uri arn:aws:apigateway:$AWS_REGION:lambda:path/2015-03-31/functions/${LAMBDAARN}/invocations
-
-#allow apigateway to call the lambda
-aws lambda add-permission --function-name taxonomy --action lambda:InvokeFunction --statement-id api-lambda --principal apigateway.amazonaws.com
 
 #create the resource (providers)
 aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part providers
