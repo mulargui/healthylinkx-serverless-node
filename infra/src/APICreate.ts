@@ -200,7 +200,8 @@ async function APICreate() {
 		//const apigwparams = {
 		//};
 		const data = await apigwclient.send(new CreateRestApiCommand({name: 'healthylinkx'}));
-		console.log("Success. API Gateway created." + data);
+		console.log("Success. API Gateway created.");
+		console.log(data);
 		
 		//APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
 		//PARENTRESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/'].id")
