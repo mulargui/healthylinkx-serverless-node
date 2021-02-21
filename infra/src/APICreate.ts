@@ -94,7 +94,7 @@ async function AddEndpoint(gwid, endpoint, lambdaArn) {
 		//create the resource (/endpoint)
 		var data = await apigwclient.send(new CreateResourceCommand({parentId: rootpathid, pathPart: endpoint, restApiId: gwid}));
 		const endpointid = data.id;
-		console.log("Success. /' + endpoint + ' created.");
+		console.log('Success. /' + endpoint + ' created.');
 
 		//create the method (GET)
 		var data = await apigwclient.send(new PutMethodCommand({authorizationType: 'NONE', 
@@ -111,7 +111,7 @@ async function AddEndpoint(gwid, endpoint, lambdaArn) {
 		await lambda.send(new AddPermissionCommand({Action: 'lambda:InvokeFunction',
 			FunctionName: endpoint, Principal: 'apigateway.amazonaws.com',
 			StatementId: 'api-lambda'}));
-		console.log("Success. /' + endpoint + ' linked to the lambda.");
+		console.log('Success. /' + endpoint + ' linked to the lambda.');
 		
 	} catch (err) {
 		console.log("Error. ", err);
