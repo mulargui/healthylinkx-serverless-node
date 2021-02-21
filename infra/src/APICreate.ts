@@ -179,69 +179,15 @@ async function APICreate() {
 		await AddEndpoint(gwid, 'providers', providersLambdaArn);
 		await AddEndpoint(gwid, 'shortlist', shortlistLambdaArn);
 		await AddEndpoint(gwid, 'transaction', transactionLambdaArn);
+		
+		//deploy all
+		await apigwclient.send(new CreateDeploymentCommand({restApiId: gwid}));
+
+		console.log('URL of the api: https://' + gwid + '.execute-api.' + constants.AWS_REGION + '.amazonaws.com/prod/');
 
 	} catch (err) {
 		console.log("Error. ", err);
 	}
 }
-
-/*
-
-
-#create the resource (providers)
-aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part providers
-RESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/providers'].id")
-
-#create the method (GET)
-aws apigateway put-method --rest-api-id $APIID --resource-id $RESOURCEID --http-method GET --authorization-type NONE
-
-#link the lambda to the method
-LAMBDAARN=$(aws lambda list-functions --query "Functions[?FunctionName==\`providers\`].FunctionArn")  
-aws apigateway put-integration --rest-api-id $APIID --resource-id $RESOURCEID \
-    --http-method GET --type AWS_PROXY --integration-http-method POST \
-    --uri arn:aws:apigateway:$AWS_REGION:lambda:path/2015-03-31/functions/${LAMBDAARN}/invocations
-
-#allow apigateway to call the lambda
-aws lambda add-permission --function-name providers --action lambda:InvokeFunction --statement-id api-lambda --principal apigateway.amazonaws.com
-
-#create the resource (shortlist)
-aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part shortlist
-RESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/shortlist'].id")
-
-#create the method (GET)
-aws apigateway put-method --rest-api-id $APIID --resource-id $RESOURCEID --http-method GET --authorization-type NONE
-
-#link the lambda to the method
-LAMBDAARN=$(aws lambda list-functions --query "Functions[?FunctionName==\`shortlist\`].FunctionArn")  
-aws apigateway put-integration --rest-api-id $APIID --resource-id $RESOURCEID \
-    --http-method GET --type AWS_PROXY --integration-http-method POST \
-    --uri arn:aws:apigateway:$AWS_REGION:lambda:path/2015-03-31/functions/${LAMBDAARN}/invocations
-
-#allow apigateway to call the lambda
-aws lambda add-permission --function-name shortlist --action lambda:InvokeFunction --statement-id api-lambda --principal apigateway.amazonaws.com
-
-#create the resource (transaction)
-aws apigateway create-resource --rest-api-id $APIID --parent-id $PARENTRESOURCEID --path-part transaction
-RESOURCEID=$(aws apigateway get-resources --rest-api-id ${APIID} --query "items[?path=='/transaction'].id")
-
-#create the method (GET)
-aws apigateway put-method --rest-api-id $APIID --resource-id $RESOURCEID --http-method GET --authorization-type NONE
-
-#link the lambda to the method
-LAMBDAARN=$(aws lambda list-functions --query "Functions[?FunctionName==\`transaction\`].FunctionArn")  
-aws apigateway put-integration --rest-api-id $APIID --resource-id $RESOURCEID \
-    --http-method GET --type AWS_PROXY --integration-http-method POST \
-    --uri arn:aws:apigateway:$AWS_REGION:lambda:path/2015-03-31/functions/${LAMBDAARN}/invocations
-
-#allow apigateway to call the lambda
-aws lambda add-permission --function-name transaction --action lambda:InvokeFunction --statement-id api-lambda --principal apigateway.amazonaws.com
-
-#deploy all
-aws apigateway create-deployment --rest-api-id $APIID --stage-name prod
-
-# URL of the api
-echo https://$APIID.execute-api.$AWS_REGION.amazonaws.com/prod/taxonomy
-
-*/
 
 module.exports = APICreate;
