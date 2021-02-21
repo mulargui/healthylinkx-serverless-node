@@ -9,7 +9,8 @@ const {
 } = require("@aws-sdk/client-iam");
 const {
     LambdaClient,
-    CreateFunctionCommand
+    CreateFunctionCommand.
+	AddPermissionCommand
 } = require("@aws-sdk/client-lambda");
 const {
     APIGatewayClient,
@@ -227,7 +228,9 @@ async function APICreate() {
 		console.log("Success. /taxonomy linked to the lambda.");
 
 		//allow apigateway to call the lambda
-		//aws lambda add-permission --function-name taxonomy --action lambda:InvokeFunction --statement-id api-lambda --principal apigateway.amazonaws.com
+		await lambda.send(new AddPermissionCommand({Action: 'lambda:InvokeFunction',
+			FunctionName: 'taxonomy', Principal: 'apigateway.amazonaws.com',
+			StatementId: 'api-lambda'}));
 
 	} catch (err) {
 		console.log("Error. ", err);
