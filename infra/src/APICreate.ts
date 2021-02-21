@@ -16,7 +16,8 @@ const {
     CreateRestApiCommand,
 	CreateResourceCommand,
 	GetResourcesCommand,
-	PutMethodCommand
+	PutMethodCommand,
+	PutIntegrationCommand
 } = require("@aws-sdk/client-api-gateway");
 const fs = require('fs');
 const exec = require('await-exec');
@@ -43,7 +44,7 @@ async function APICreate() {
 
 	try {
 		//create a IAM role under which the lambdas will run
-/*		const iamclient = new IAMClient(config);
+		const iamclient = new IAMClient(config);
 		const roleparams = {
 			AssumeRolePolicyDocument: '{"Version": "2012-10-17","Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}',
 			RoleName: 'healthylinkx-lambda'
@@ -126,8 +127,9 @@ async function APICreate() {
 		};
 
 		//create the lambda
-		await lambda.send(new CreateFunctionCommand(params));
+		var data = await lambda.send(new CreateFunctionCommand(params));
 		console.log("Success. Taxonomy lambda created.");
+		console.log(data);
 	
 		//create providers lambda
 		// read the lambda zip file  
@@ -197,7 +199,7 @@ async function APICreate() {
 		await fs.unlinkSync(constants.ROOT + '/api/src/package-lock.json');
 		await fs.unlinkSync(constants.ROOT + '/api/src/constants.js');
 		await fs.rmdirSync(constants.ROOT + '/api/src/node_modules', { recursive: true });
-*/
+
 		//create the api gateway
 		const apigwclient = new APIGatewayClient(config);
 		var data = await apigwclient.send(new CreateRestApiCommand({name: 'healthylinkx'}));
@@ -214,9 +216,16 @@ async function APICreate() {
 		console.log("Success. /taxonomy created.");
 
 		//create the method (GET)
-		var data = await apigwclient.send(new PutMethodCommand({authorizationType: 'NONE', httpMethod: 'GET', resourceId: taxonomyid, restApiId: gwid}));
+		var data = await apigwclient.send(new PutMethodCommand({authorizationType: 'NONE', 
+			httpMethod: 'GET', resourceId: taxonomyid, restApiId: gwid}));
 		console.log(data);
-		
+		return;
+		//link the lambda to the method
+		//LAMBDAARN=$(aws lambda list-functions --query "Functions[?FunctionName==\`taxonomy\`].FunctionArn")  
+		var data = await apigwclient.send(new PutIntegrationCommand({httpMethod: 'GET',
+			resourceId: taxonomyid, restApiId: gwid, type: "AWS_PROXY",
+			integrationHttpMethod: 'POST',
+			uri: 'arn:aws:apigateway:'+ constants.AWS_REGION +':lambda:path/2015-03-31/functions/' + 'LAMBDAARN' + '/invocations'}));
 
 	} catch (err) {
 		console.log("Error. ", err);

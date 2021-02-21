@@ -37,7 +37,6 @@ async function APIDelete() {
 		const data = await apigwclient.send(new GetRestApisCommand({}));
 		await apigwclient.send(new DeleteRestApiCommand({restApiId: data.items[0].id}));
 		console.log("Success. API Gateway deleted.");
-		return;
 		
 		//delete the lambdas
 		const lambda = new LambdaClient(config);		
