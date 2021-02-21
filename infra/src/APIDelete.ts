@@ -33,7 +33,7 @@ async function APIDelete() {
 	try {
 		// delete the api gateway
 		const apigwclient = new APIGatewayClient(config);
-		const data = await apigwclient.send(new GetRestApisCommand());
+		const data = await apigwclient.send(new GetRestApisCommand({}));
 		//APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
 		//aws apigateway delete-rest-api --rest-api-id $APIID
 		console.log(data);
