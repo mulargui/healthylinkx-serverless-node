@@ -15,7 +15,8 @@ const {
     APIGatewayClient,
     CreateRestApiCommand,
 	CreateResourceCommand,
-	GetResourcesCommand
+	GetResourcesCommand,
+	PutMethodCommand
 } = require("@aws-sdk/client-api-gateway");
 const fs = require('fs');
 const exec = require('await-exec');
