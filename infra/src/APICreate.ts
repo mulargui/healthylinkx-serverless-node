@@ -9,7 +9,7 @@ const {
 } = require("@aws-sdk/client-iam");
 const {
     LambdaClient,
-    CreateFunctionCommand.
+    CreateFunctionCommand,
 	AddPermissionCommand
 } = require("@aws-sdk/client-lambda");
 const {
