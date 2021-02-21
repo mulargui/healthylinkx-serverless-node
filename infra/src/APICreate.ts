@@ -90,6 +90,8 @@ async function AddEndpoint(gwid, endpoint, lambdaArn) {
 		// id of '/' path 
 		var data = await apigwclient.send(new GetResourcesCommand({restApiId:gwid}));
 		const rootpathid = data.items[0].id;
+		console.log(data);
+		console.log(rootpathid);
 		
 		//create the resource (/endpoint)
 		var data = await apigwclient.send(new CreateResourceCommand({parentId: rootpathid, pathPart: endpoint, restApiId: gwid}));
