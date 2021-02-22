@@ -69,6 +69,11 @@ async function DSCreate() {
 		await rdsclient.send(new CreateDBInstanceCommand(rdsparams));
 		console.log("Success. healthylinkx-db requested.");
 
+		//unzip the file to dump on the database
+		// we do this here to use the wait time to unzip
+		await fs.createReadStream(constants.ROOT + '/datastore/src/healthylinkxdump.sql.zip')
+			.pipe(unzip.Extract({ path: constants.ROOT + '/datastore/src' }));
+
 		//wait till the instance is created
 		while(true) {
 			data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
@@ -82,10 +87,6 @@ async function DSCreate() {
 		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
 		const endpoint = data.DBInstances[0].Endpoint.Address;
 		console.log("DB endpoint: " + endpoint);
-
-		//unzip the file to dump on the database
-		await fs.createReadStream(constants.ROOT + '/datastore/src/healthylinkxdump.sql.zip')
-			.pipe(unzip.Extract({ path: constants.ROOT + '/datastore/src' }));
 
 		//load the data (and schema) into the database
 		// I really don't like this solution but all others I tried didn't work well => compromising!
