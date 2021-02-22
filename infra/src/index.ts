@@ -75,18 +75,20 @@ async function main () {
 		switch (myArgs[1]) {
 		case 'create':
 		case 'c':
-			console.log('Not Implemented');
-			usage();
+			await DSCreate();
+			await APICreate();
+			await UXCreate();
 			break;
 		case 'delete':
 		case 'd':
-			console.log('Not Implemented');
-			usage();
+			await UXDelete();
+			await APIDelete();
+			await DSDelete();
 			break;
 		case 'update':
 		case 'u':
-			console.log('Not Implemented');
-			usage();
+			await APIUpdate();
+			await UXUpdate();
 			break;
 		default:
 			usage();
