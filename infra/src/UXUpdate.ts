@@ -5,8 +5,13 @@ const {
 	CreateBucketCommand,
 	PutBucketWebsiteCommand
 } = require("@aws-sdk/client-s3");
+const {
+    APIGatewayClient,
+    GetRestApisCommand
+} = require("@aws-sdk/client-api-gateway");
 const fs = require('fs');
 const path = require('path');
+const replace = require('replace-in-file');
 
 // Set the AWS region and secrets
 const config = {
@@ -35,12 +40,25 @@ function walkSync(currentDirPath, callback) {
 
 // ====== create the S3 bucket and copy files =====
 async function UXUpdate() {
-/*  
-#include the API URL in the javascript code
-APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
-sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/constants.js
-*/
+
 	try {
+		//we need to set the url of the api in the constants.js file
+		//URL of the api
+		const apigwclient = new APIGatewayClient(config);
+		var data = await apigwclient.send(new GetRestApisCommand({}));
+		const endpointid = data.items[0].id;
+		console.log("API endpoint: " + endpointid);
+
+		// create contants.js with env values
+		fs.copyFileSync(constants.ROOT+'/ux/src/js/constants.template.js', constants.ROOT+'/ux/src/js/constants.js');
+		const options = {
+			files: constants.ROOT+'/ux/src/js/constants.js',
+			from: ['APIID', 'REGION'],
+			to: [endpointid, constants.AWS_REGION]
+		};
+		await replace(options);
+		console.log("Success. Constants updated.");
+
 		// Create an S3 client service object
 		const AWSs3Client = new S3Client(config);
 		

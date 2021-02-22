@@ -40,11 +40,6 @@ function walkSync(currentDirPath, callback) {
 
 // ====== create the S3 bucket and copy files =====
 async function UXCreate() {
-/*  
-#include the API URL in the javascript code
-APIID=$(aws apigateway get-rest-apis --query "items[?name==\`healthylinkx\`].id")
-sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/constants.js
-*/
 	
 	try {
 		
