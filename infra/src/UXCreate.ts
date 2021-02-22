@@ -11,6 +11,7 @@ const {
 } = require("@aws-sdk/client-api-gateway");
 const fs = require('fs');
 const path = require('path');
+const replace = require('replace-in-file');
 
 // Set the AWS region and secrets
 const config = {
