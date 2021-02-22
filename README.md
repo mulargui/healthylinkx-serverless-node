@@ -21,7 +21,7 @@ The API is implemented as a set of lambdas exposed by an API Gateway
 /api/src - source code of the lambdas (node js) - one file per lambda  
 
 The datastore is a RDS MySql instance  
-/datastore/src - dump of the healthylinkx database  
+/datastore/src - dump of the healthylinkx database (schema and data)
 
 The ux is a web app (html+jquery+bootstrap+javascript) hosted in a S3 bucket  
 /ux/src - the source code of the ux app 
