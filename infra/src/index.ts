@@ -5,6 +5,7 @@ const DSCreate = require('./DSCreate.ts');
 const DSDelete = require('./DSDelete.ts');
 const APICreate = require('./APICreate.ts');
 const APIDelete = require('./APIDelete.ts');
+const APIUpdate = require('./APIUpdate.ts');
 
 function usage(){
 	console.log('Usage: healthylinkx-cli ds|api|ux|all delete|d|create|c|update|u');
@@ -46,7 +47,7 @@ async function main () {
 			break;
 		case 'update':
 		case 'u':
-			console.log('22');
+			APIUpdate();
 			break;
 		default:
 			usage();
@@ -74,15 +75,18 @@ async function main () {
 		switch (myArgs[1]) {
 		case 'create':
 		case 'c':
-			console.log('40');
+			console.log('Not Implemented');
+			usage();
 			break;
 		case 'delete':
 		case 'd':
-			console.log('41');
+			console.log('Not Implemented');
+			usage();
 			break;
 		case 'update':
 		case 'u':
-			console.log('42');
+			console.log('Not Implemented');
+			usage();
 			break;
 		default:
 			usage();
