@@ -84,7 +84,7 @@ async function APIUpdate() {
 		console.log("Success. Constants updated.");
 		
 		// install api node language dependencies
-		await exec(`cd ${constants.ROOT}/api/src; npm install`);
+		await exec(`cd ${constants.ROOT}/api/src; npm install ${nodedependencies}`);
 
 		//update the lambdas
 		await UpdateLambda('taxonomy');
