@@ -51,9 +51,7 @@ sed "s/APIID/$APIID/" $ROOT/ux/src/js/constants.template.js > $ROOT/ux/src/js/co
 		//URL of the api
 		const apigwclient = new APIGatewayClient(config);
 		var data = await apigwclient.send(new GetRestApisCommand({}));
-		console.log(data);
-		return;
-		const endpointid = data.id;
+		const endpointid = data.items[0].id;
 		console.log("API endpoint: " + endpointid);
 
 		// create contants.js with env values
