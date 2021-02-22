@@ -140,8 +140,8 @@ async function APICreate() {
 
 		//URL of the database
 		const rdsclient = new RDSClient(config);
-		//data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
-		const endpoint = 'temporal';//data.DBInstances[0].Endpoint.Address;
+		data = await rdsclient.send(new DescribeDBInstancesCommand({DBInstanceIdentifier: 'healthylinkx-db'}));
+		const endpoint = data.DBInstances[0].Endpoint.Address;
 		console.log("DB endpoint: " + endpoint);
 
 		// create contants.js with env values
