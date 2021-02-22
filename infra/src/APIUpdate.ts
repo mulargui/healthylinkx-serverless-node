@@ -42,11 +42,9 @@ async function UpdateLambda(name)
 		// read the lambda zip file  
 		const filecontent = fs.readFileSync(constants.ROOT+'/api/src/' + name + '.zip');
 
-		//create the lambda
+		//update the lambda
 		const params = {
-			Code: {
-				ZipFile: filecontent
-			},
+			ZipFile: filecontent,
 			FunctionName: name
 		};
 		const lambda = new LambdaClient(config);				
