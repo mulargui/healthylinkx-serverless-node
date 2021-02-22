@@ -19,9 +19,6 @@ const config = {
 	region: constants.AWS_REGION
 };
 
-//lamdba node dependencies
-const nodedependencies = 'mysql2 axios';
-
 // ======== helper function ============
 function sleep(secs) {
 	return new Promise(resolve => setTimeout(resolve, secs * 1000));
@@ -35,7 +32,6 @@ async function UpdateLambda(name)
 		const file = new AdmZip();	
 		file.addLocalFile(constants.ROOT+'/api/src/' + name + '.js');
 		file.addLocalFile(constants.ROOT+'/api/src/constants.js');
-		//file.addLocalFile(constants.ROOT+'/api/src/package-lock.json');
 		file.addLocalFolder(constants.ROOT+'/api/src/node_modules', 'node_modules');
 		file.writeZip(constants.ROOT+'/api/src/' + name + '.zip');		
 
