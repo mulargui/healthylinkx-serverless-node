@@ -177,8 +177,7 @@ async function APICreate() {
 		await AddEndpoint(gwid, 'transaction', transactionLambdaArn);
 		
 		//deploy all
-		//await apigwclient.send(new CreateDeploymentCommand({restApiId: gwid, stageName: 'prod'}));
-		await apigwclient.send(new CreateDeploymentCommand({restApiId: gwid}));
+		await apigwclient.send(new CreateDeploymentCommand({restApiId: gwid, stageName: 'prod'}));
 		console.log("Success. API Gateway deployed.");
 
 		console.log('URL of the api: https://' + gwid + '.execute-api.' + constants.AWS_REGION + '.amazonaws.com/prod/');
