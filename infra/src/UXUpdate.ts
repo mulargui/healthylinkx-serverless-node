@@ -65,8 +65,34 @@ async function UXUpdate() {
 		//copy files
 		walkSync(directoryToUpload, async function(filePath, stat) {
 			let bucketPath = filePath.substring(directoryToUpload.length+1);
-			let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath), ACL:'public-read'};
-	 
+			let params = {Bucket: bucketName, Key: bucketPath, Body: fs.readFileSync(filePath), 
+				ContentType: 'text/html', ACL:'public-read'};
+
+			//associate the content type related to the file extension
+			switch (path.extname(bucketPath)) {
+			case '.css':
+				params.ContentType='text/css';
+				break;
+			case '.otf':
+				params.ContentType='font/otf';
+				break;
+			case '.eot':
+				params.ContentType='application/vnd.ms-fontobject';
+				break;
+			case '.svg':
+				params.ContentType='image/svg+xml';
+				break;
+			case '.ttf':
+				params.ContentType='font/ttf';
+				break;
+			case '.woff':
+				params.ContentType='font/woff';
+				break;
+			case '.html':
+				params.ContentType='text/html';
+				break;
+			}
+
 			await AWSs3Client.send(new PutObjectCommand(params));
 			console.log("Success. " + bucketPath + " file copied to bucket " + bucketName);
 		});
